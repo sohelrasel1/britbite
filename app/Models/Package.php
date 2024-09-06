@@ -12,6 +12,7 @@ class Package extends Model
         'title',
         'slug',
         'price',
+        'package_discount',
         'term',
         'featured',
         'recommended',
