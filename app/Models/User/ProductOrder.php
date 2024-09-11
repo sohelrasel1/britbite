@@ -48,6 +48,7 @@ class ProductOrder extends Model
         'delivery_date',
         'delivery_time_start',
         'delivery_time_end',
+        'after_discount_price',
        ];
 
 

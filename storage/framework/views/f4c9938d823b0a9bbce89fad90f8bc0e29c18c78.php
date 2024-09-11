@@ -1,16 +1,16 @@
-@php
+<?php
     use App\Models\User\Product;
     use Illuminate\Support\Facades\Auth;
-@endphp
-@extends('user.layout')
+?>
 
-@section('sidebar', 'overlay-sidebar')
 
-@section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/calculator.min.css') }}">
-@endsection
+<?php $__env->startSection('sidebar', 'overlay-sidebar'); ?>
 
-@section('content')
+<?php $__env->startSection('styles'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/admin/css/calculator.min.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
 
     <div class="row" id="outsidePrintScreen">
         <div class="col-md-12">
@@ -28,22 +28,22 @@
                         </div>
                     </div>
                     <div id="posCatItems" style="display: block;">
-                        @includeIf('user.pos.partials.cats-items')
+                        <?php if ($__env->exists('user.pos.partials.cats-items')) echo $__env->make('user.pos.partials.cats-items', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                     </div>
                     <div id="posItems" style="display: none;">
-                        @includeIf('user.pos.partials.items')
+                        <?php if ($__env->exists('user.pos.partials.items')) echo $__env->make('user.pos.partials.items', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                     </div>
                 </div>
                 <div class="col-lg-2">
                     <div class="card">
                         <div class="card-body px-2">
-                            <form id="ajaxForm" action="{{ route('user.pos.placeOrder') }}" method="POST">
-                                @csrf
+                            <form id="ajaxForm" action="<?php echo e(route('user.pos.placeOrder')); ?>" method="POST">
+                                <?php echo csrf_field(); ?>
                                 <div class="form-group p-0 pb-2">
                                     <div class="ui-widget">
                                         <label for="">Customer Phone</label>
                                         <input class="form-control" type="text" name="customer_phone"
-                                            placeholder="Customer Phone Number" value="{{ old('customer_phone') }}"
+                                            placeholder="Customer Phone Number" value="<?php echo e(old('customer_phone')); ?>"
                                             onchange="loadCustomerName(this.value)">
                                         <p class="text-warning mb-0">Use <strong>Country Code</strong> in phone number
                                         </p>
@@ -53,7 +53,7 @@
                                     <div class="ui-widget">
                                         <label for="">Customer Name</label>
                                         <input class="form-control" name="customer_name" type="text"
-                                            placeholder="Customer Name" value="{{ old('customer_name') }}" disabled>
+                                            placeholder="Customer Name" value="<?php echo e(old('customer_name')); ?>" disabled>
                                         <small class="text-warning">Enter customer phone first.</small>
                                     </div>
                                 </div>
@@ -61,42 +61,43 @@
                                     <div class="ui-widget">
                                         <label for="">Customer Email</label>
                                         <input class="form-control" name="customer_email" type="email"
-                                            placeholder="Customer Email" value="{{ old('customer_email') }}" disabled>
+                                            placeholder="Customer Email" value="<?php echo e(old('customer_email')); ?>" disabled>
                                         <small class="text-warning">Enter customer email first.</small>
                                     </div>
                                 </div>
                                 <div class="form-group p-0 pb-2">
                                     <label for="">Serving Method **</label>
                                     <select class="form-control" name="serving_method" required>
-                                        @foreach ($smethods as $smethod)
-                                            @if (!empty($packagePermissions) && in_array($smethod->name, $packagePermissions))
-                                                <option value="{{ $smethod->value }}"
-                                                    {{ $smethod->value == old('serving_method') ? 'selected' : '' }}>
-                                                    {{ $smethod->name }}
+                                        <?php $__currentLoopData = $smethods; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $smethod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php if(!empty($packagePermissions) && in_array($smethod->name, $packagePermissions)): ?>
+                                                <option value="<?php echo e($smethod->value); ?>"
+                                                    <?php echo e($smethod->value == old('serving_method') ? 'selected' : ''); ?>>
+                                                    <?php echo e($smethod->name); ?>
+
                                                 </option>
-                                            @endif
-                                        @endforeach
+                                            <?php endif; ?>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                                 <div class="form-group p-0 pb-2">
                                     <label for="">Payment Method </label>
                                     <select class="form-control select2" name="payment_method">
                                         <option value="" selected disabled>Select Payment Method</option>
-                                        @foreach ($pmethods as $pmethod)
-                                            <option value="{{ $pmethod->name }}"
-                                                {{ $pmethod->name == old('payment_method') ? 'selected' : '' }}>
-                                                {{ $pmethod->name }}</option>
-                                        @endforeach
+                                        <?php $__currentLoopData = $pmethods; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pmethod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($pmethod->name); ?>"
+                                                <?php echo e($pmethod->name == old('payment_method') ? 'selected' : ''); ?>>
+                                                <?php echo e($pmethod->name); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                                 <div class="form-group p-0 pb-2">
                                     <label for="">Payment Status **</label>
                                     <select class="form-control" name="payment_status" required>
-                                        <option value="Pending" {{ 'Pending' == old('payment_status') ? 'selected' : '' }}>
+                                        <option value="Pending" <?php echo e('Pending' == old('payment_status') ? 'selected' : ''); ?>>
                                             Pending
                                         </option>
                                         <option value="Completed"
-                                            {{ 'Completed' == old('payment_status') ? 'selected' : '' }}>
+                                            <?php echo e('Completed' == old('payment_status') ? 'selected' : ''); ?>>
                                             Completed
                                         </option>
                                     </select>
@@ -106,11 +107,11 @@
                                         <label for="">Table No</label>
                                         <select class="form-control select2" name="table_no">
                                             <option value="" selected disabled>Select Table No</option>
-                                            @foreach ($tables as $table)
-                                                <option value="{{ $table->table_no }}"
-                                                    {{ $table->table_no == old('table_no') ? 'selected' : '' }}>
-                                                    Table - {{ $table->table_no }}</option>
-                                            @endforeach
+                                            <?php $__currentLoopData = $tables; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $table): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($table->table_no); ?>"
+                                                    <?php echo e($table->table_no == old('table_no') ? 'selected' : ''); ?>>
+                                                    Table - <?php echo e($table->table_no); ?></option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </select>
                                     </div>
                                 </div>
@@ -118,7 +119,7 @@
                                     <div class="ui-widget">
                                         <label for="">After Discount</label>
                                         <input class="form-control" name="after_discount_price" type="text"
-                                            placeholder="After discount price " value="{{ old('after_discount_price') }}" >
+                                            placeholder="After discount price " value="<?php echo e(old('after_discount_price')); ?>" >
                                         <small class="text-warning">If there is a discount </small>
                                     </div>
                                 </div>
@@ -137,87 +138,95 @@
                                 </div>
 
                                 <div id="home_delivery" class="d-none extra-fields">
-                                    @if ($userBe->delivery_date_time_status == 1)
+                                    <?php if($userBe->delivery_date_time_status == 1): ?>
                                         <div class="form-group p-0 pb-2">
-                                            <label>Delivery Date {{ $userBe->delivery_date_time_required == 1 ? '*' : '' }}
+                                            <label>Delivery Date <?php echo e($userBe->delivery_date_time_required == 1 ? '*' : ''); ?>
+
                                             </label>
                                             <div
-                                                class="field-input cross {{ !empty(old('delivery_date')) ? 'cross-show' : '' }}">
+                                                class="field-input cross <?php echo e(!empty(old('delivery_date')) ? 'cross-show' : ''); ?>">
                                                 <input class="form-control delivery-datepicker" type="text"
                                                     name="delivery_date" autocomplete="off"
-                                                    value="{{ old('delivery_date') }}">
+                                                    value="<?php echo e(old('delivery_date')); ?>">
                                                 <i class="far fa-times-circle"></i>
                                             </div>
                                         </div>
                                         <div class="form-group p-0 pb-2">
                                             <label>Delivery Time
-                                                {{ $userBe->delivery_date_time_required == 1 ? '*' : '' }}</label>
+                                                <?php echo e($userBe->delivery_date_time_required == 1 ? '*' : ''); ?></label>
                                             <select id="deliveryTime" class="form-control" name="delivery_time" disabled>
                                                 <option value="" selected disabled>Select a time frame</option>
                                             </select>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
 
                                     <div id="shippingPostCharges">
-                                        @if (
+                                        <?php if(
                                             $userBs->postal_code == 0 ||
-                                                (is_array($packagePermissions) && !in_array('Postal Code Based Delivery Charge', $packagePermissions)))
+                                                (is_array($packagePermissions) && !in_array('Postal Code Based Delivery Charge', $packagePermissions))): ?>
 
-                                            @if (count($scharges) > 0)
+                                            <?php if(count($scharges) > 0): ?>
                                                 <div id="shippingCharges" class="form-group p-0 pb-2">
-                                                    <label>{{ __('Shipping Charges') }}</label>
-                                                    @foreach ($scharges as $scharge)
+                                                    <label><?php echo e(__('Shipping Charges')); ?></label>
+                                                    <?php $__currentLoopData = $scharges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $scharge): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <div class="form-check p-0 pl-4">
                                                             <input class="form-check-input" type="radio"
-                                                                data="{{ !empty($scharge->free_delivery_amount) && posCartSubTotal() >= $scharge->free_delivery_amount ? 0 : $scharge->charge }}"
-                                                                name="shipping_charge" id="scharge{{ $scharge->id }}"
-                                                                value="{{ $scharge->id }}"
-                                                                {{ $loop->first ? 'checked' : '' }}
-                                                                data-free_delivery_amount="{{ $scharge->free_delivery_amount }}">
+                                                                data="<?php echo e(!empty($scharge->free_delivery_amount) && posCartSubTotal() >= $scharge->free_delivery_amount ? 0 : $scharge->charge); ?>"
+                                                                name="shipping_charge" id="scharge<?php echo e($scharge->id); ?>"
+                                                                value="<?php echo e($scharge->id); ?>"
+                                                                <?php echo e($loop->first ? 'checked' : ''); ?>
+
+                                                                data-free_delivery_amount="<?php echo e($scharge->free_delivery_amount); ?>">
                                                             <label class="form-check-label mb-0"
-                                                                for="scharge{{ $scharge->id }}">{{ $scharge->title }}</label>
+                                                                for="scharge<?php echo e($scharge->id); ?>"><?php echo e($scharge->title); ?></label>
                                                             +
                                                             <strong>
-                                                                {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}{{ $scharge->charge }}{{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?><?php echo e($scharge->charge); ?><?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
                                                             </strong>
                                                         </div>
 
-                                                        @if (!empty($scharge->free_delivery_amount))
-                                                            <p class="mb-0 pl-2">(@lang('Free Delivery for Orders over')
-                                                                {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}{{ $scharge->free_delivery_amount - 1 }}{{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
-                                                                )</p>
-                                                        @endif
-                                                        <p class="mb-0 text-warning pl-2">
-                                                            <small>{{ $scharge->text }}</small>
-                                                        </p>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                        @else
-                                            <div class="form-group p-0 pb-2">
-                                                <label>{{ __('Postal Code') }} (Delivery Area)</label>
-                                                <select name="postal_code" class="select2 form-control">
-                                                    @foreach ($postcodes as $postcode)
-                                                        <option value="{{ $postcode->id }}"
-                                                            data="{{ $postcode->charge }}"
-                                                            data-free_delivery_amount="{{ $postcode->free_delivery_amount }}">
-                                                            @if (!empty($postcode->title))
-                                                                {{ $postcode->title }} -
-                                                            @endif
-                                                            {{ $postcode->postcode }}
+                                                        <?php if(!empty($scharge->free_delivery_amount)): ?>
+                                                            <p class="mb-0 pl-2">(<?php echo app('translator')->get('Free Delivery for Orders over'); ?>
+                                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?><?php echo e($scharge->free_delivery_amount - 1); ?><?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
 
-                                                            ({{ __('Delivery Charge') }}
+                                                                )</p>
+                                                        <?php endif; ?>
+                                                        <p class="mb-0 text-warning pl-2">
+                                                            <small><?php echo e($scharge->text); ?></small>
+                                                        </p>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <div class="form-group p-0 pb-2">
+                                                <label><?php echo e(__('Postal Code')); ?> (Delivery Area)</label>
+                                                <select name="postal_code" class="select2 form-control">
+                                                    <?php $__currentLoopData = $postcodes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $postcode): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($postcode->id); ?>"
+                                                            data="<?php echo e($postcode->charge); ?>"
+                                                            data-free_delivery_amount="<?php echo e($postcode->free_delivery_amount); ?>">
+                                                            <?php if(!empty($postcode->title)): ?>
+                                                                <?php echo e($postcode->title); ?> -
+                                                            <?php endif; ?>
+                                                            <?php echo e($postcode->postcode); ?>
+
+
+                                                            (<?php echo e(__('Delivery Charge')); ?>
+
                                                             -
-                                                            {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}{{ $postcode->charge }}{{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
-                                                            @if (!empty($postcode->free_delivery_amount))
-                                                                , @lang('Free Delivery for Orders over')
-                                                                {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}{{ $postcode->free_delivery_amount - 1 }}{{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
-                                                            @endif)
+                                                            <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?><?php echo e($postcode->charge); ?><?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
+                                                            <?php if(!empty($postcode->free_delivery_amount)): ?>
+                                                                , <?php echo app('translator')->get('Free Delivery for Orders over'); ?>
+                                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?><?php echo e($postcode->free_delivery_amount - 1); ?><?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
+                                                            <?php endif; ?>)
                                                         </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
@@ -226,10 +235,10 @@
 
                         <div class="card-footer text-center">
                             <button id="submitBtn" class="btn btn-success" type="button">Place Order</button>
-                            @if (!empty($onTable) && $onTable->pos == 1)
-                                <p class="mb-0 text-warning">Token No. print option (for '{{ $onTable->name }}' orders)
+                            <?php if(!empty($onTable) && $onTable->pos == 1): ?>
+                                <p class="mb-0 text-warning">Token No. print option (for '<?php echo e($onTable->name); ?>' orders)
                                     will be shown after placing order.</p>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -244,11 +253,11 @@
 
 
                             <div id="divRefresh">
-                                @if (empty($cart))
+                                <?php if(empty($cart)): ?>
                                     <div class="text-center py-5 mt-4">
                                         <h4>NO ITEMS ADDED</h4>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div id="cartTable">
                                         <table class="table table-striped">
                                             <thead>
@@ -256,86 +265,92 @@
                                                     <th scope="col">Item</th>
                                                     <th scope="col">Qty</th>
                                                     <th scope="col">Price
-                                                        ({{ $userBe->base_currency_symbol }})
+                                                        (<?php echo e($userBe->base_currency_symbol); ?>)
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($cart as $key => $item)
-                                                    @php
+                                                <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php
                                                         $id = $item['id'];
                                                         $user = getRootUser();
                                                         $product = Product::query()
                                                             ->where('user_id', $user->id)
                                                             ->findOrFail($id);
-                                                    @endphp
+                                                    ?>
                                                     <tr class="cart-item">
                                                         <td width="55%" class="item">
                                                             <h5>
-                                                                {{ strlen($item['name']) > 27 ? mb_substr($item['name'], 0, 27, 'UTF-8') . '...' : $item['name'] }}
+                                                                <?php echo e(strlen($item['name']) > 27 ? mb_substr($item['name'], 0, 27, 'UTF-8') . '...' : $item['name']); ?>
+
 
                                                             </h5>
-                                                            @if (!empty($item['variations']))
-                                                                <p><strong>{{ __('Variation') }}:</strong>
+                                                            <?php if(!empty($item['variations'])): ?>
+                                                                <p><strong><?php echo e(__('Variation')); ?>:</strong>
                                                                     <br>
-                                                                    @php
+                                                                    <?php
                                                                         $variations = $item['variations'];
-                                                                    @endphp
-                                                                    @foreach ($variations as $vKey => $variation)
+                                                                    ?>
+                                                                    <?php $__currentLoopData = $variations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vKey => $variation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                                         <span
-                                                                            class="text-capitalize">{{ str_replace('_', ' ', $vKey) }}:</span>
-                                                                        {{ $variation['name'] }}
-                                                                        @if (!$loop->last)
-                                                                            ,
-                                                                        @endif
-                                                                    @endforeach
-                                                                </p>
-                                                            @endif
+                                                                            class="text-capitalize"><?php echo e(str_replace('_', ' ', $vKey)); ?>:</span>
+                                                                        <?php echo e($variation['name']); ?>
 
-                                                            @if (!empty($item['addons']))
-                                                                <p>
-                                                                    <strong>{{ __('Addons') }}:</strong>
-                                                                    @php
-                                                                        $addons = $item['addons'];
-                                                                    @endphp
-                                                                    @foreach ($addons as $addon)
-                                                                        {{ $addon['name'] }}
-                                                                        @if (!$loop->last)
+                                                                        <?php if(!$loop->last): ?>
                                                                             ,
-                                                                        @endif
-                                                                    @endforeach
+                                                                        <?php endif; ?>
+                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                                 </p>
-                                                            @endif
+                                                            <?php endif; ?>
+
+                                                            <?php if(!empty($item['addons'])): ?>
+                                                                <p>
+                                                                    <strong><?php echo e(__('Addons')); ?>:</strong>
+                                                                    <?php
+                                                                        $addons = $item['addons'];
+                                                                    ?>
+                                                                    <?php $__currentLoopData = $addons; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $addon): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                        <?php echo e($addon['name']); ?>
+
+                                                                        <?php if(!$loop->last): ?>
+                                                                            ,
+                                                                        <?php endif; ?>
+                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                                </p>
+                                                            <?php endif; ?>
                                                             <i class="fas fa-times text-danger item-remove"
-                                                                data-href="{{ route('user.cart.item.remove', $key) }}"></i>
+                                                                data-href="<?php echo e(route('user.cart.item.remove', $key)); ?>"></i>
                                                         </td>
                                                         <td width="25%"
                                                             style="padding-left: 0 !important;padding-right: 0 !important;">
                                                             <div class="input-group mb-3">
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text sub decreaseQty"
-                                                                        data-key="{{ $key }}">
+                                                                        data-key="<?php echo e($key); ?>">
                                                                         <i class="fas fa-minus"></i>
                                                                     </span>
                                                                 </div>
                                                                 <input name="quantity" type="number"
-                                                                    class="form-control" value="{{ $item['qty'] }}"
-                                                                    data-key="{{ $key }}">
+                                                                    class="form-control" value="<?php echo e($item['qty']); ?>"
+                                                                    data-key="<?php echo e($key); ?>">
                                                                 <div class="input-group-append">
                                                                     <span class="input-group-text add increaseQty"
-                                                                        data-key="{{ $key }}">
+                                                                        data-key="<?php echo e($key); ?>">
                                                                         <i class="fas fa-plus"></i>
                                                                     </span>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                         <td width="20%">
-                                                            {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
-                                                            {{ $item['total'] }}
-                                                            {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                                            <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
+
+                                                            <?php echo e($item['total']); ?>
+
+                                                            <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
                                                         </td>
                                                     </tr>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -343,41 +358,49 @@
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             Subtotal
                                             <span>
-                                                {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
-                                                <span id="subtotal">{{ posCartSubTotal() }}</span>
-                                                {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
+
+                                                <span id="subtotal"><?php echo e(posCartSubTotal()); ?></span>
+                                                <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
                                             </span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             Tax
                                             <span>
                                                 +
-                                                {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
-                                                <span id="tax">{{ posTax() }}</span>
-                                                {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
+
+                                                <span id="tax"><?php echo e(posTax()); ?></span>
+                                                <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
                                             </span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             Shipping Charge
                                             <span>
                                                 +
-                                                {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
-                                                <span id="shipping">{{ posShipping() }}</span>
-                                                {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
+
+                                                <span id="shipping"><?php echo e(posShipping()); ?></span>
+                                                <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
                                             </span>
                                         </li>
                                         <li
                                             class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white">
                                             <strong>Total</strong>
                                             <span>
-                                                {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
+                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
+
                                                 <span
-                                                    class="grandTotal">{{ posCartSubTotal() + posTax() + posShipping() }}</span>
-                                                {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                                    class="grandTotal"><?php echo e(posCartSubTotal() + posTax() + posShipping()); ?></span>
+                                                <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
                                             </span>
                                         </li>
                                     </ul>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -485,57 +508,59 @@
     </div>
 
 
-    @includeIf('user.pos.variation-modal')
+    <?php if ($__env->exists('user.pos.variation-modal')) echo $__env->make('user.pos.variation-modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
   
 
     <div id="customerCopy">
-        <iframe id="customerReceipt" src="{{ url('user/print/customer-copy') }}" style="display:none;"></iframe>
+        <iframe id="customerReceipt" src="<?php echo e(url('user/print/customer-copy')); ?>" style="display:none;"></iframe>
     </div>
     <div id="kitchenCopy">
-        <iframe id="kitchenReceipt" src="{{ url('user/print/kitchen-copy') }}" style="display:none;"></iframe>
+        <iframe id="kitchenReceipt" src="<?php echo e(url('user/print/kitchen-copy')); ?>" style="display:none;"></iframe>
     </div>
     <div id="tokenNo">
-        <iframe id="tokenNoPrintable" src="{{ url('user/print/token-no') }}" style="display:none;"></iframe>
+        <iframe id="tokenNoPrintable" src="<?php echo e(url('user/print/token-no')); ?>" style="display:none;"></iframe>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
     
-    <script src="{{ asset('assets/admin/js/plugin/math.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/plugin/calculator/calculator.min.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/plugin/printthis.min.js') }}"></script>
-    <script src="{{ asset('assets/front/js/plugin.min.js') }}"></script>
+    <script src="<?php echo e(asset('assets/admin/js/plugin/math.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/admin/js/plugin/calculator/calculator.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/admin/js/plugin/printthis.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/front/js/plugin.min.js')); ?>"></script>
 
 
-    @if (
+    <?php if(
         !empty($onTable) &&
             $onTable->pos == 1 &&
             Session::has('success') &&
             Session::has('previous_serving_method') &&
-            Session::get('previous_serving_method') == 'on_table')
+            Session::get('previous_serving_method') == 'on_table'): ?>
         <script>
             var tokenFrame = document.getElementById("tokenNoPrintable");
             tokenFrame.focus();
             tokenFrame.contentWindow.print();
         </script>
-    @endif
+    <?php endif; ?>
 
       <script>
-    const postalCode = "{{ $userBs->postal_code }}";
+    const postalCode = "<?php echo e($userBs->postal_code); ?>";
         let getServingMethod = "";
-        var cartRoute = "{{ route('user.cart.clear') }}";
-        var timeFramesRoute = "{{ route('user.pos.timeframes') }}";
-        var shippingChargeRoute = "{{ route('user.pos.shippingCharge') }}";
+        var cartRoute = "<?php echo e(route('user.cart.clear')); ?>";
+        var timeFramesRoute = "<?php echo e(route('user.pos.timeframes')); ?>";
+        var shippingChargeRoute = "<?php echo e(route('user.pos.shippingCharge')); ?>";
     </script>
-    <script src="{{ asset('assets/tenant/js/pos.js') }}"></script>
+    <script src="<?php echo e(asset('assets/tenant/js/pos.js')); ?>"></script>
   
 
     <script>
-        var textPosition = "{{ $userBe->base_currency_text_position }}";
-        var currText = "{{ $userBe->base_currency_text }}";
-        var posAudio = new Audio("{{ asset('assets/front/files/beep-07.mp3') }}");
-        var select = "{{ __('Select') }}";
+        var textPosition = "<?php echo e($userBe->base_currency_text_position); ?>";
+        var currText = "<?php echo e($userBe->base_currency_text); ?>";
+        var posAudio = new Audio("<?php echo e(asset('assets/front/files/beep-07.mp3')); ?>");
+        var select = "<?php echo e(__('Select')); ?>";
     </script>
    
-    <script src="{{ asset('assets/admin/js/cart.js') }}"></script>
-@endsection
+    <script src="<?php echo e(asset('assets/admin/js/cart.js')); ?>"></script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('user.layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH G:\BritBite-Company-England\britbite-git\britbite\resources\views/user/pos/index.blade.php ENDPATH**/ ?>

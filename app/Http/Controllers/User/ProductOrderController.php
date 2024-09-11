@@ -82,7 +82,7 @@ class ProductOrderController extends Controller
         })
         ->orderBy('id', 'DESC')
         ->paginate(10);
-     
+    //  dd($data);
         return view('user.product.order.index', $data);
     }
 

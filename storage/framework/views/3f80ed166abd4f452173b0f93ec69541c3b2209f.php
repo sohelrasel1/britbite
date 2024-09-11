@@ -134,7 +134,7 @@
                                             <a href="<?php echo e(detailsUrl($template)); ?>" class="lazy-container">
                                                 <img class="lazyload lazy-image"
                                                     data-src="<?php echo e(asset('assets/front/img/template-previews/' . $template->template_img)); ?>"
-                                                    alt="Demo Image" />
+                                                    alt="Templete Demo Image" />
                                             </a>
                                         </div>
                                     </div>

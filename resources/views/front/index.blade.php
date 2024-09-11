@@ -130,7 +130,7 @@
                                             <a href="{{ detailsUrl($template) }}" class="lazy-container">
                                                 <img class="lazyload lazy-image"
                                                     data-src="{{ asset('assets/front/img/template-previews/' . $template->template_img) }}"
-                                                    alt="Demo Image" />
+                                                    alt="Templete Demo Image" />
                                             </a>
                                         </div>
                                     </div>

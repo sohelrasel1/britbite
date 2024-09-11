@@ -75,8 +75,19 @@
                                                     </div>
                                                     <p class="text"></p>
                                                     <div class="d-flex align-items-center">
-                                                        <span
-                                                            class="price">{{ $package->price != 0 && $be->base_currency_symbol_position == 'left' ? $be->base_currency_symbol : '' }}{{ $package->price == 0 ? 'Free' : $package->price }}{{ $package->price != 0 && $be->base_currency_symbol_position == 'right' ? $be->base_currency_symbol : '' }}</span>
+                                                        <!-- <span
+                                                            class="price">{{ $package->price != 0 && $be->base_currency_symbol_position == 'left' ? $be->base_currency_symbol : '' }}{{ $package->price == 0 ? 'Free' : $package->price }}{{ $package->price != 0 && $be->base_currency_symbol_position == 'right' ? $be->base_currency_symbol : '' }}</span> -->
+
+                                                            <span class="price">
+                                                                {{ $package->price != 0 && $be->base_currency_symbol_position == 'left' ? $be->base_currency_symbol : '' }}
+                                                                {{ $package->price == 0 ? 'Free' : $package->price }}
+                                                                {{ $package->price != 0 && $be->base_currency_symbol_position == 'right' ? $be->base_currency_symbol : '' }}
+                                                            </span>
+                                                            <s class="price">
+                                                                {{ $package->package_discount != 0 && $be->base_currency_symbol_position == 'left' ? $be->base_currency_symbol : '' }}
+                                                                {{ $package->package_discount != 0 ? $package->package_discount : '' }} <!-- Add this line to display the discount -->
+                                                                {{ $package->package_discount != 0 && $be->base_currency_symbol_position == 'right' ? $be->base_currency_symbol : '' }}
+                                                            </s>
                                                         @php
                                                             $termname = ucfirst($package->term);
                                                         @endphp
