@@ -280,8 +280,7 @@ use App\Http\Helpers\Uploader;
                                                     data-val="<?php echo e($order->id); ?>">
                                             </td>
                                             <!-- <td><?php echo e($order->order_number); ?></td> -->
-                                            <td><?php echo e(substr($order->order_number, 0, 5) . substr($order->order_number, -5)); ?></td>
-
+                                            <td><?php echo e(substr($order->order_number, -5)); ?> - Table No : <?php echo e($order->table_number ? convertUtf8($order->table_number) : '0'); ?></td>
                                             <td>
 
                                                 <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>

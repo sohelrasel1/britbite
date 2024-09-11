@@ -280,8 +280,7 @@ use App\Http\Helpers\Uploader;
                                                     data-val="{{ $order->id }}">
                                             </td>
                                             <!-- <td>{{ $order->order_number }}</td> -->
-                                            <td>{{ substr($order->order_number, 0, 5) . substr($order->order_number, -5) }}</td>
-
+                                            <td>{{substr($order->order_number, -5) }} - Table No : {{$order->table_number ? convertUtf8($order->table_number) : '0' }}</td>
                                             <td>
 
                                                 {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
