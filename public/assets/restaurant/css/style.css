@@ -513,11 +513,15 @@ textarea {
   position: inherit;
   padding: 0;
 }
-
+.header-area .main-navbar .navbar .navbar-brand img{
+ width: 100%;
+ height: 80px;
+}
 .header-area .main-navbar .navbar .navbar-brand {
   padding: 0;
   margin: 0;
 }
+
 
 .header-area .main-navbar .nav-item {
   position: relative;

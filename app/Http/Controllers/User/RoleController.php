@@ -92,6 +92,7 @@ class RoleController extends Controller
           ->where('user_id', $userId)
           ->find($request->role_id);
       $role->permissions = $permissions;
+      // dd($role->permissions);
       $role->save();
 
       Session::flash('success', "Permissions updated successfully for '$role->name' role");
