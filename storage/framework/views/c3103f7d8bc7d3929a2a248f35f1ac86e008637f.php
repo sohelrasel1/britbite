@@ -89,7 +89,7 @@ $packageHas = json_decode($package->features, true);
                                                     <?php if(is_array($features) && in_array('Order Management', $features)): ?> checked <?php endif; ?>>
                                                 <span class="selectgroup-button"><?php echo e(__('Order Management')); ?></span>
                                             </label>
-                                        <?php endif; ?>
+                                    <?php endif; ?>
 
 
 <!-- 

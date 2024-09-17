@@ -345,23 +345,23 @@ use App\Http\Helpers\Uploader;
                                                         value="<?php echo e($order->id); ?>">
                                                     <select
                                                         class="form-control
-                                  <?php if($order->order_status == 'pending'): ?> <?php elseif($order->order_status == 'received'): ?>
-                                    bg-secondary
-                                  <?php elseif($order->order_status == 'preparing'): ?>
-                                    bg-warning
-                                  <?php elseif($order->order_status == 'ready_to_pick_up'): ?>
-                                    bg-primary
-                                  <?php elseif($order->order_status == 'picked_up'): ?>
-                                    bg-info
-                                  <?php elseif($order->order_status == 'delivered'): ?>
-                                    bg-success
-                                  <?php elseif($order->order_status == 'cancelled'): ?>
-                                    bg-danger
-                                  <?php elseif($order->order_status == 'ready_to_serve'): ?>
-                                    bg-white text-dark
-                                  <?php elseif($order->order_status == 'served'): ?>
-                                    bg-light text-dark <?php endif; ?>
-                                  "
+                                                            <?php if($order->order_status == 'pending'): ?> <?php elseif($order->order_status == 'received'): ?>
+                                                                bg-secondary
+                                                            <?php elseif($order->order_status == 'preparing'): ?>
+                                                                bg-warning
+                                                            <?php elseif($order->order_status == 'ready_to_pick_up'): ?>
+                                                                bg-primary
+                                                            <?php elseif($order->order_status == 'picked_up'): ?>
+                                                                bg-info
+                                                            <?php elseif($order->order_status == 'delivered'): ?>
+                                                                bg-success
+                                                            <?php elseif($order->order_status == 'cancelled'): ?>
+                                                                bg-danger
+                                                            <?php elseif($order->order_status == 'ready_to_serve'): ?>
+                                                                bg-white text-dark
+                                                            <?php elseif($order->order_status == 'served'): ?>
+                                                                bg-light text-dark <?php endif; ?>
+                                                            "
                                                         name="order_status"
                                                         onchange="document.getElementById('statusForm<?php echo e($order->id); ?>').submit();">
                                                         <option value="pending"

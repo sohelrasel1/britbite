@@ -262,59 +262,130 @@ class MegaMailer
             }
         }
 
-        try {
+        // try {
 
-            Mail::send([], [], function (Message $message) use ($data, $body, $temp, $be, $userBs, $userBe, $packageArray) {
-                $fromMail = $be->from_mail;
-                $fromName = $userBe->from_name;
-                $message->to($data['toMail'])
-                    ->subject($temp->mail_subject)
-                    ->from($fromMail, $fromName)
-                    ->replyTo($userBe->from_mail, $userBe->from_name)
-                    ->html($body, 'text/html');
+        //     Mail::send([], [], function (Message $message) use ($data, $body, $temp, $be, $userBs, $userBe, $packageArray) {
+        //         $fromMail = $be->from_mail;
+        //         $fromName = $userBe->from_name;
+        //         $message->to($data['toMail'])
+        //             ->subject($temp->mail_subject)
+        //             ->from($fromMail, $fromName)
+        //             ->replyTo($userBe->from_mail, $userBe->from_name)
+        //             ->html($body, 'text/html');
 
-                if (array_key_exists('attachment', $data)) {
-                    $directory = public_path(Constant::WEBSITE_PRODUCT_INVOICE) . '/';
-                    $path = $directory . $data['attachment'];
-                    // Attachments (Invoice)
-                    if (in_array('Amazon AWS s3', $packageArray) && !is_null($userBs->aws_access_key_id) && !is_null($userBs->aws_secret_access_key) && !is_null($userBs->aws_default_region) && !is_null($userBs->aws_bucket)) {
-                        setAwsCredentials($userBs->aws_access_key_id, $userBs->aws_secret_access_key, $userBs->aws_default_region, $userBs->aws_bucket);
-                        $s3 = Storage::disk('s3');
-                        if ($s3->exists($path)) {
-                            if (!file_exists($directory)) {
-                                if (!mkdir($directory, 0755, true)) {
-                                    die('Failed to create folders...');
-                                }
-                            }
-                            touch($path);
-                            copy($s3->url($path), $path);
-                        }
-                    }
+        //         if (array_key_exists('attachment', $data)) {
+        //             $directory = public_path(Constant::WEBSITE_PRODUCT_INVOICE) . '/';
+        //             $path = $directory . $data['attachment'];
+        //             // Attachments (Invoice)
+        //             if (in_array('Amazon AWS s3', $packageArray) && !is_null($userBs->aws_access_key_id) && !is_null($userBs->aws_secret_access_key) && !is_null($userBs->aws_default_region) && !is_null($userBs->aws_bucket)) {
+        //                 setAwsCredentials($userBs->aws_access_key_id, $userBs->aws_secret_access_key, $userBs->aws_default_region, $userBs->aws_bucket);
+        //                 $s3 = Storage::disk('s3');
+        //                 if ($s3->exists($path)) {
+        //                     if (!file_exists($directory)) {
+        //                         if (!mkdir($directory, 0755, true)) {
+        //                             die('Failed to create folders...');
+        //                         }
+        //                     }
+        //                     touch($path);
+        //                     copy($s3->url($path), $path);
+        //                 }
+        //             }
 
-                    $message->attach($path);
+        //             $message->attach($path);
                   
-                }
+        //         }
 
-                // Attachments
-                if (array_key_exists('attachment', $data)) {
-                    $directory = public_path(Constant::WEBSITE_PRODUCT_INVOICE) . '/';
-                    $path = $directory . $data['attachment'];
-                    //remove copied aws file from local storage
-                    if (in_array('Amazon AWS s3', $packageArray) && !is_null($userBs->aws_access_key_id) && !is_null($userBs->aws_secret_access_key) && !is_null($userBs->aws_default_region) && !is_null($userBs->aws_bucket)) {
-                        setAwsCredentials($userBs->aws_access_key_id, $userBs->aws_secret_access_key, $userBs->aws_default_region, $userBs->aws_bucket);
-                        $s3 = Storage::disk('s3');
-                        if ($s3->exists($path)) {
-                            @unlink($path);
+        //         // Attachments
+        //         if (array_key_exists('attachment', $data)) {
+        //             $directory = public_path(Constant::WEBSITE_PRODUCT_INVOICE) . '/';
+        //             $path = $directory . $data['attachment'];
+        //             //remove copied aws file from local storage
+        //             if (in_array('Amazon AWS s3', $packageArray) && !is_null($userBs->aws_access_key_id) && !is_null($userBs->aws_secret_access_key) && !is_null($userBs->aws_default_region) && !is_null($userBs->aws_bucket)) {
+        //                 setAwsCredentials($userBs->aws_access_key_id, $userBs->aws_secret_access_key, $userBs->aws_default_region, $userBs->aws_bucket);
+        //                 $s3 = Storage::disk('s3');
+        //                 if ($s3->exists($path)) {
+        //                     @unlink($path);
+        //                 }
+        //             }
+        //             Session::flash("success", "The order information was sent to your email.");
+        //             return;
+        //         }
+        //     });
+        // } catch (\Exception $e) {
+        //     Session::flash('error', $e->getMessage());
+        //     return;
+        // }
+
+        
+        try {
+            // Check if email account and necessary data exist
+            if (!empty($be->from_mail) && !empty($userBe->from_name) && !empty($data['toMail']) && !empty($temp->mail_subject)) {
+                Mail::send([], [], function (Message $message) use ($data, $body, $temp, $be, $userBs, $userBe, $packageArray) {
+                    $fromMail = $be->from_mail;
+                    $fromName = $userBe->from_name;
+        
+                    // Set basic email information
+                    $message->to($data['toMail'])
+                            ->subject($temp->mail_subject)
+                            ->from($fromMail, $fromName)
+                            ->replyTo($userBe->from_mail, $userBe->from_name)
+                            ->html($body, 'text/html');
+        
+                    // Handle attachments (Invoice)
+                    if (array_key_exists('attachment', $data)) {
+                        $directory = public_path(Constant::WEBSITE_PRODUCT_INVOICE) . '/';
+                        $path = $directory . $data['attachment'];
+        
+                        // Check if Amazon AWS S3 storage is configured and used
+                        if (in_array('Amazon AWS s3', $packageArray) && !is_null($userBs->aws_access_key_id) && !is_null($userBs->aws_secret_access_key) && !is_null($userBs->aws_default_region) && !is_null($userBs->aws_bucket)) {
+                            setAwsCredentials($userBs->aws_access_key_id, $userBs->aws_secret_access_key, $userBs->aws_default_region, $userBs->aws_bucket);
+                            $s3 = Storage::disk('s3');
+        
+                            // Check if file exists in S3 and copy to local if necessary
+                            if ($s3->exists($path)) {
+                                if (!file_exists($directory)) {
+                                    if (!mkdir($directory, 0755, true)) {
+                                        die('Failed to create folders...');
+                                    }
+                                }
+                                touch($path);
+                                copy($s3->url($path), $path);
+                            }
+                        }
+        
+                        // Attach file
+                        $message->attach($path);
+                    }
+        
+                    // Clean up local file if copied from S3
+                    if (array_key_exists('attachment', $data)) {
+                        $directory = public_path(Constant::WEBSITE_PRODUCT_INVOICE) . '/';
+                        $path = $directory . $data['attachment'];
+        
+                        // Remove the copied AWS file from local storage
+                        if (in_array('Amazon AWS s3', $packageArray) && !is_null($userBs->aws_access_key_id) && !is_null($userBs->aws_secret_access_key) && !is_null($userBs->aws_default_region) && !is_null($userBs->aws_bucket)) {
+                            setAwsCredentials($userBs->aws_access_key_id, $userBs->aws_secret_access_key, $userBs->aws_default_region, $userBs->aws_bucket);
+                            $s3 = Storage::disk('s3');
+        
+                            if ($s3->exists($path)) {
+                                @unlink($path);
+                            }
                         }
                     }
+        
                     Session::flash("success", "The order information was sent to your email.");
-                    return;
-                }
-            });
+                });
+            } else {
+                // Log or handle case where mail account or data is missing
+                Session::flash('error', 'Missing email configuration or necessary data.');
+            }
         } catch (\Exception $e) {
-            Session::flash('error', $e->getMessage());
+            // Handle exceptions more gracefully
+            Session::flash('error', 'An error occurred while sending the email: ' . $e->getMessage());
             return;
         }
+
+        
     }
     public function mailToOwner($data, $email)
     {

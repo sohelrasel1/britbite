@@ -342,23 +342,23 @@ use App\Http\Helpers\Uploader;
                                                         value="{{ $order->id }}">
                                                     <select
                                                         class="form-control
-                                  @if ($order->order_status == 'pending') @elseif ($order->order_status == 'received')
-                                    bg-secondary
-                                  @elseif ($order->order_status == 'preparing')
-                                    bg-warning
-                                  @elseif ($order->order_status == 'ready_to_pick_up')
-                                    bg-primary
-                                  @elseif ($order->order_status == 'picked_up')
-                                    bg-info
-                                  @elseif ($order->order_status == 'delivered')
-                                    bg-success
-                                  @elseif ($order->order_status == 'cancelled')
-                                    bg-danger
-                                  @elseif ($order->order_status == 'ready_to_serve')
-                                    bg-white text-dark
-                                  @elseif ($order->order_status == 'served')
-                                    bg-light text-dark @endif
-                                  "
+                                                            @if ($order->order_status == 'pending') @elseif ($order->order_status == 'received')
+                                                                bg-secondary
+                                                            @elseif ($order->order_status == 'preparing')
+                                                                bg-warning
+                                                            @elseif ($order->order_status == 'ready_to_pick_up')
+                                                                bg-primary
+                                                            @elseif ($order->order_status == 'picked_up')
+                                                                bg-info
+                                                            @elseif ($order->order_status == 'delivered')
+                                                                bg-success
+                                                            @elseif ($order->order_status == 'cancelled')
+                                                                bg-danger
+                                                            @elseif ($order->order_status == 'ready_to_serve')
+                                                                bg-white text-dark
+                                                            @elseif ($order->order_status == 'served')
+                                                                bg-light text-dark @endif
+                                                            "
                                                         name="order_status"
                                                         onchange="document.getElementById('statusForm{{ $order->id }}').submit();">
                                                         <option value="pending"

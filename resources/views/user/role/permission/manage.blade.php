@@ -89,7 +89,7 @@ $packageHas = json_decode($package->features, true);
                                                     @if (is_array($features) && in_array('Order Management', $features)) checked @endif>
                                                 <span class="selectgroup-button">{{ __('Order Management') }}</span>
                                             </label>
-                                        @endif
+                                    @endif
 
 
 <!-- 
