@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +33,13 @@
             margin-top: 0px;
         }
 
-        p, h1, h2, h3, h4, h5, h6 {
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             margin: 0;
         }
 
@@ -64,6 +71,7 @@
             margin-bottom: 5px;
         }
 
+
         .order-summary .info.total {
             font-size: 18px;
         }
@@ -82,76 +90,112 @@
             top: 46px;
             left: 2px;
         }
+
+        .print_level {
+            padding: 0 5px;
+            border-top: 1px dashed #000;
+            border-left: 1px dashed #000;
+            border-right: 1px dashed #000;
+            margin-top: 20px;
+        }
+
+        .total-page {
+            width: 80%;
+            margin: 0 10%;
+        }
+        .pft{
+            text-align: center;
+            padding-top: 50px;
+        }
     </style>
 </head>
+
 <body>
 
-<div>
-    <div class="receipt-title">
-        @if (Session::has('pos_serving_method') && !empty(Session::get('pos_serving_method')))
+    <div class="total-page">
+        <div class="receipt-title">
+            @if (Session::has('pos_serving_method') && !empty(Session::get('pos_serving_method')))
             <div class="serving-method">{{Session::get('pos_serving_method')}}</div>
-        @endif
-        <h2 class="my-0">{{$userBs->website_title}}</h2>
-        <span class="my-0">(Customer Copy)</span>
-        @php
+            @endif
+            <h2 class="my-0">{{$userBs->website_title}}</h2>
+            <span class="my-0">(Customer Copy)</span>
+            @php
             $addresses = explode(PHP_EOL, $userBs->contact_address);
-        @endphp
+            @endphp
 
-        <p class="my-0" style="max-width: 200px; margin: 0 auto;">{{$addresses[0]}}</p>
-        <p class="my-0">{{\Carbon\Carbon::now()}}</p>
-        <p class="my-0">{{request()->getHttpHost()}}</p>
-    </div>
+            <p class="my-0" style="max-width: 200px; margin: 0 auto;">{{$addresses[0]}}</p>
+            <p class="my-0">{{\Carbon\Carbon::now()}}</p>
+            <p class="my-0">{{request()->getHttpHost()}}</p>
 
-    @if (!empty($cart))
+
+            <div class="print_level">
+                <div class="order-summary">
+                    <div class="info">
+                        <div class="quantity">
+                            <h4>Qty</h4>
+                        </div>
+                        <div class="description">
+                            <h4>Description</h4>
+                        </div>
+                        <div class="amount info ">
+                            <h4>Amount</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        @if (!empty($cart))
         <div id="cartTable">
 
             @foreach ($cart as $key => $item)
-                @php
-                    $id = $item["id"];
-                    $product = \App\Models\User\Product::findOrFail($id);
-                @endphp
-                <div class="cart-item">
-                    <div class="item">
-                        <div class="qty">
-                            {{$item['qty']}} X
-                        </div>
-                        <div class="item-name">
-                            <p class="text-white">{{convertUtf8($item['name'])}}</p>
-                            @if (!empty($item["variations"]))
-                                <p>{{__("Variation")}}: <br>
-                                    @php
-                                        $variations = $item["variations"];
-                                    @endphp
-                                    @foreach ($variations as $vKey => $variation)
-                                        <span class="text-capitalize">{{str_replace("_"," ",$vKey)}}:</span> {{$variation["name"]}}
-                                        @if (!$loop->last)
-                                            ,
-                                        @endif
-                                    @endforeach
-                                </p>
-                            @endif
-                            @if (!empty($item["addons"]))
-                                <p>
-                                    {{__("Addons")}}:
-                                    @php
-                                        $addons = $item["addons"];
-                                    @endphp
-                                    @foreach ($addons as $addon)
-                                        {{$addon["name"]}}
-                                        @if (!$loop->last)
-                                            ,
-                                        @endif
-                                    @endforeach
-                                </p>
-                            @endif
-                        </div>
+            @php
+            $id = $item["id"];
+            $product = \App\Models\User\Product::findOrFail($id);
+            @endphp
+            <div class="cart-item">
+                <div class="item">
+                    <div class="qty">
+                        {{$item['qty']}} X
                     </div>
-                    <div class="item-total">
-                        {{$userBe->base_currency_text_position == 'left' ? $userBe->base_currency_text : ''}}
-                        {{$item['total']}}
-                        {{$userBe->base_currency_text_position == 'right' ? $userBe->base_currency_text : ''}}
+                    <div class="item-name">
+                        <p class="text-white">{{convertUtf8($item['name'])}}</p>
+                        @if (!empty($item["variations"]))
+                        <p>{{__("Variation")}}: <br>
+                            @php
+                            $variations = $item["variations"];
+                            @endphp
+                            @foreach ($variations as $vKey => $variation)
+                            <span class="text-capitalize">{{str_replace("_"," ",$vKey)}}:</span> {{$variation["name"]}}
+                            @if (!$loop->last)
+                            ,
+                            @endif
+                            @endforeach
+                        </p>
+                        @endif
+                        @if (!empty($item["addons"]))
+                        <p>
+                            {{__("Addons")}}:
+                            @php
+                            $addons = $item["addons"];
+                            @endphp
+                            @foreach ($addons as $addon)
+                            {{$addon["name"]}}
+                            @if (!$loop->last)
+                            ,
+                            @endif
+                            @endforeach
+                        </p>
+                        @endif
                     </div>
                 </div>
+                <div class="item-total">
+                    {{$userBe->base_currency_text_position == 'left' ? $userBe->base_currency_text : ''}}
+                    {{$item['total']}}
+                    {{$userBe->base_currency_text_position == 'right' ? $userBe->base_currency_text : ''}}
+                </div>
+            </div>
             @endforeach
 
         </div>
@@ -193,8 +237,13 @@
             </div>
         </div>
 
-    @endif
-</div>
+        @endif
+        <div class="pft">
+            <p>Service charge (tips) is not included</p>
+            <p>-----Thank You-----</p>
+        </div>
+    </div>
 
 </body>
+
 </html>

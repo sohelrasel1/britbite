@@ -98,14 +98,14 @@
                                         <div class="form-group px-0">
                                             <label for=""> Current Price
                                                 ({{ $userBe->base_currency_text }})**</label>
-                                            <input type="number" class="form-control ltr" name="current_price"
+                                            <input type="text" class="form-control ltr" name="current_price"
                                                 placeholder="Enter Current Price">
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group px-0">
                                             <label for="">Previous Price ({{ $userBe->base_currency_text }})</label>
-                                            <input type="number" class="form-control ltr" name="previous_price"
+                                            <input type="text" class="form-control ltr" name="previous_price"
                                                  placeholder="Enter Previous Price">
                                         </div>
                                     </div>

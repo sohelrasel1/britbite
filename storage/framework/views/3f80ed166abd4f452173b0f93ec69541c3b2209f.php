@@ -272,7 +272,7 @@
                                                     <p class="text"></p>
                                                     <div class="d-flex align-items-center">
                                                         <!-- <span class="price"><?php echo e($package->price != 0 && $be->base_currency_symbol_position == 'left' ? $be->base_currency_symbol : ''); ?><?php echo e($package->price == 0 ? 'Free' : $package->price); ?><?php echo e($package->price != 0 && $be->base_currency_symbol_position == 'right' ? $be->base_currency_symbol : ''); ?></span> -->
-                                                      
+
                                                         <span class="price">
                                                                 <?php echo e($package->price != 0 && $be->base_currency_symbol_position == 'left' ? $be->base_currency_symbol : ''); ?>
 
@@ -288,7 +288,7 @@
                                                                 <?php echo e($package->package_discount != 0 && $be->base_currency_symbol_position == 'right' ? $be->base_currency_symbol : ''); ?>
 
                                                             </s>
-                                                      
+
                                                         <?php
                                                             $termname = ucfirst($package->term);
                                                         ?>

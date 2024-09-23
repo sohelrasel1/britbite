@@ -128,7 +128,7 @@
                                         <div class="form-group px-0">
                                             <label for=""> Current Price
                                                 (<?php echo e($userBe->base_currency_text); ?>)**</label>
-                                            <input type="number" class="form-control ltr" name="current_price"
+                                            <input type="text" class="form-control ltr" name="current_price"
                                                 value="<?php echo e($data->current_price); ?>" placeholder="Enter Current Price">
                                         </div>
                                     </div>
@@ -136,7 +136,7 @@
                                         <div class="form-group px-0">
                                             <label for="">Previous Price
                                                 (<?php echo e($userBe->base_currency_text); ?>)</label>
-                                            <input type="number" class="form-control ltr" name="previous_price"
+                                            <input type="text" class="form-control ltr" name="previous_price"
                                                 value="<?php echo e($data->previous_price); ?>" placeholder="Enter Previous Price">
                                         </div>
                                     </div>

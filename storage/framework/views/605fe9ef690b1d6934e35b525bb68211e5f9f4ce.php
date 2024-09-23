@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +33,13 @@
             margin-top: 0px;
         }
 
-        p, h1, h2, h3, h4, h5, h6 {
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             margin: 0;
         }
 
@@ -64,6 +71,7 @@
             margin-bottom: 5px;
         }
 
+
         .order-summary .info.total {
             font-size: 18px;
         }
@@ -82,81 +90,117 @@
             top: 46px;
             left: 2px;
         }
+
+        .print_level {
+            padding: 0 5px;
+            border-top: 1px dashed #000;
+            border-left: 1px dashed #000;
+            border-right: 1px dashed #000;
+            margin-top: 20px;
+        }
+
+        .total-page {
+            width: 80%;
+            margin: 0 10%;
+        }
+        .pft{
+            text-align: center;
+            padding-top: 50px;
+        }
     </style>
 </head>
+
 <body>
 
-<div>
-    <div class="receipt-title">
-        <?php if(Session::has('pos_serving_method') && !empty(Session::get('pos_serving_method'))): ?>
+    <div class="total-page">
+        <div class="receipt-title">
+            <?php if(Session::has('pos_serving_method') && !empty(Session::get('pos_serving_method'))): ?>
             <div class="serving-method"><?php echo e(Session::get('pos_serving_method')); ?></div>
-        <?php endif; ?>
-        <h2 class="my-0"><?php echo e($userBs->website_title); ?></h2>
-        <span class="my-0">(Customer Copy)</span>
-        <?php
+            <?php endif; ?>
+            <h2 class="my-0"><?php echo e($userBs->website_title); ?></h2>
+            <span class="my-0">(Customer Copy)</span>
+            <?php
             $addresses = explode(PHP_EOL, $userBs->contact_address);
-        ?>
+            ?>
 
-        <p class="my-0" style="max-width: 200px; margin: 0 auto;"><?php echo e($addresses[0]); ?></p>
-        <p class="my-0"><?php echo e(\Carbon\Carbon::now()); ?></p>
-        <p class="my-0"><?php echo e(request()->getHttpHost()); ?></p>
-    </div>
+            <p class="my-0" style="max-width: 200px; margin: 0 auto;"><?php echo e($addresses[0]); ?></p>
+            <p class="my-0"><?php echo e(\Carbon\Carbon::now()); ?></p>
+            <p class="my-0"><?php echo e(request()->getHttpHost()); ?></p>
 
-    <?php if(!empty($cart)): ?>
+
+            <div class="print_level">
+                <div class="order-summary">
+                    <div class="info">
+                        <div class="quantity">
+                            <h4>Qty</h4>
+                        </div>
+                        <div class="description">
+                            <h4>Description</h4>
+                        </div>
+                        <div class="amount info ">
+                            <h4>Amount</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <?php if(!empty($cart)): ?>
         <div id="cartTable">
 
             <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <?php
-                    $id = $item["id"];
-                    $product = \App\Models\User\Product::findOrFail($id);
-                ?>
-                <div class="cart-item">
-                    <div class="item">
-                        <div class="qty">
-                            <?php echo e($item['qty']); ?> X
-                        </div>
-                        <div class="item-name">
-                            <p class="text-white"><?php echo e(convertUtf8($item['name'])); ?></p>
-                            <?php if(!empty($item["variations"])): ?>
-                                <p><?php echo e(__("Variation")); ?>: <br>
-                                    <?php
-                                        $variations = $item["variations"];
-                                    ?>
-                                    <?php $__currentLoopData = $variations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vKey => $variation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <span class="text-capitalize"><?php echo e(str_replace("_"," ",$vKey)); ?>:</span> <?php echo e($variation["name"]); ?>
-
-                                        <?php if(!$loop->last): ?>
-                                            ,
-                                        <?php endif; ?>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </p>
-                            <?php endif; ?>
-                            <?php if(!empty($item["addons"])): ?>
-                                <p>
-                                    <?php echo e(__("Addons")); ?>:
-                                    <?php
-                                        $addons = $item["addons"];
-                                    ?>
-                                    <?php $__currentLoopData = $addons; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $addon): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php echo e($addon["name"]); ?>
-
-                                        <?php if(!$loop->last): ?>
-                                            ,
-                                        <?php endif; ?>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </p>
-                            <?php endif; ?>
-                        </div>
+            <?php
+            $id = $item["id"];
+            $product = \App\Models\User\Product::findOrFail($id);
+            ?>
+            <div class="cart-item">
+                <div class="item">
+                    <div class="qty">
+                        <?php echo e($item['qty']); ?> X
                     </div>
-                    <div class="item-total">
-                        <?php echo e($userBe->base_currency_text_position == 'left' ? $userBe->base_currency_text : ''); ?>
+                    <div class="item-name">
+                        <p class="text-white"><?php echo e(convertUtf8($item['name'])); ?></p>
+                        <?php if(!empty($item["variations"])): ?>
+                        <p><?php echo e(__("Variation")); ?>: <br>
+                            <?php
+                            $variations = $item["variations"];
+                            ?>
+                            <?php $__currentLoopData = $variations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vKey => $variation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <span class="text-capitalize"><?php echo e(str_replace("_"," ",$vKey)); ?>:</span> <?php echo e($variation["name"]); ?>
 
-                        <?php echo e($item['total']); ?>
+                            <?php if(!$loop->last): ?>
+                            ,
+                            <?php endif; ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </p>
+                        <?php endif; ?>
+                        <?php if(!empty($item["addons"])): ?>
+                        <p>
+                            <?php echo e(__("Addons")); ?>:
+                            <?php
+                            $addons = $item["addons"];
+                            ?>
+                            <?php $__currentLoopData = $addons; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $addon): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php echo e($addon["name"]); ?>
 
-                        <?php echo e($userBe->base_currency_text_position == 'right' ? $userBe->base_currency_text : ''); ?>
-
+                            <?php if(!$loop->last): ?>
+                            ,
+                            <?php endif; ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </p>
+                        <?php endif; ?>
                     </div>
                 </div>
+                <div class="item-total">
+                    <?php echo e($userBe->base_currency_text_position == 'left' ? $userBe->base_currency_text : ''); ?>
+
+                    <?php echo e($item['total']); ?>
+
+                    <?php echo e($userBe->base_currency_text_position == 'right' ? $userBe->base_currency_text : ''); ?>
+
+                </div>
+            </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
         </div>
@@ -210,9 +254,13 @@
             </div>
         </div>
 
-    <?php endif; ?>
-</div>
+        <?php endif; ?>
+        <div class="pft">
+            <p>Service charge (tips) is not included</p>
+            <p>-----Thank You-----</p>
+        </div>
+    </div>
 
 </body>
-</html>
-<?php /**PATH G:\BritBite-Company-England\britbite-git\britbite\resources\views/user/pos/partials/customer-copy.blade.php ENDPATH**/ ?>
+
+</html><?php /**PATH G:\BritBite-Company-England\britbite-git\britbite\resources\views/user/pos/partials/customer-copy.blade.php ENDPATH**/ ?>

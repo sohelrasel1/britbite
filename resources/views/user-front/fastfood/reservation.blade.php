@@ -170,7 +170,7 @@
                                         <div class="col-lg-12">
                                             <div class="book-btn text-center mt-20">
                                                 <button class="main-btn main-btn-2"
-                                                        type="button">{{$keywords['Book Table'] ?? __('Book Table') }}
+                                                        type="submit">{{$keywords['Book Table'] ?? __('Book Table') }}
                                                 </button>
                                             </div>
                                         </div>
@@ -188,44 +188,28 @@
 
 <!-- WhatsApp Script -->
 <script>
-    $('.main-btn').on('click', function() {
+    $('.main-btn').on('click', function(event) {
+        event.preventDefault(); // Prevent form submission immediately
+
         var inputs = $('#reservation :input');
-
-        // var whatsappLink = 'https://wa.me/' + phone.replace("+", "") +
-        //     '?text=Name:%20' + name +
-        //     '%0AEmail:%20' + email +
-        //     '%0AMobile:%20' + mobile +1
-        //     '%0ADate:%20' + date +
-        //     '%0ATime:%20' + time;
-
         var phone = $('#whatsapp').val();
+        var whatsappLink = 'https://wa.me/' + phone.replace("+", "") + `?text=`;
 
-        var whatsappLink = 'https://wa.me/' + phone.replace("+", "")+`?text=`;
-
-        na = ``;
-
+        var na = ``;
         inputs.each(function() {
-
-            if ($(this).attr('type') == 'text') {
-
-                n = $(this).attr('name')+`:%20'`+$(this).val()+`%0A`;
-
+            if ($(this).attr('type') == 'text' || $(this).is('textarea')) {
+                var n = $(this).attr('name') + `:%20` + $(this).val() + `%0A`;
                 na += n;
             }
-            // values[this.name] = $(this).val();
-
-
-
         });
 
         whatsappLink += na;
 
-        // console.log(whatsappLink)
-
-
+        // Open WhatsApp link
         window.open(whatsappLink, '_blank');
 
-        // console.log('s');
+        // Now, submit the form
+        $(this).closest('form').submit();
 
         return false;
     });

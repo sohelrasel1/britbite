@@ -98,7 +98,7 @@
                                         <div class="form-group px-0">
                                             <label for=""> Current Price
                                                 (<?php echo e($userBe->base_currency_text); ?>)**</label>
-                                            <input type="number" class="form-control ltr" name="current_price"
+                                            <input type="text" class="form-control ltr" name="current_price"
                                                 placeholder="Enter Current Price">
                                         </div>
                                     </div>
