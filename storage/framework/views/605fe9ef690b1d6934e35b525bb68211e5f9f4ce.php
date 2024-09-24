@@ -123,9 +123,10 @@
             $addresses = explode(PHP_EOL, $userBs->contact_address);
             ?>
 
-            <p class="my-0" style="max-width: 200px; margin: 0 auto;"><?php echo e($addresses[0]); ?></p>
+            <p class="my-0" style="max-width: 250px; margin: 0 auto;"><?php echo e($addresses[0]); ?></p>
             <p class="my-0"><?php echo e(\Carbon\Carbon::now()); ?></p>
             <p class="my-0"><?php echo e(request()->getHttpHost()); ?></p>
+            <h3>Table No :<?php echo e(Session::get('table_no') ?? '0'); ?></h3> 
 
 
             <div class="print_level">
@@ -230,7 +231,7 @@
                 </div>
             </div>
             <div class="info">
-                <div>Delivery Charge:</div>
+                <div>Service Charge:</div>
                 <div>
                     +
                     <?php echo e($userBe->base_currency_text_position == 'left' ? $userBe->base_currency_text : ''); ?>

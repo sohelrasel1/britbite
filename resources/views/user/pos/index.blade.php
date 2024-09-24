@@ -358,7 +358,7 @@
                                             </span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Shipping Charge
+                                            Service Charge
                                             <span>
                                                 +
                                                 {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}

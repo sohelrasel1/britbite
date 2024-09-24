@@ -100,7 +100,7 @@
           <div class="card-header">
               <div class="row">
                   <div class="col-lg-12">
-                      <div class="card-title">Stripe</div>
+                      <div class="card-title">Card Payment</div>
                   </div>
               </div>
           </div>
