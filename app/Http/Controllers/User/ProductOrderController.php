@@ -26,27 +26,28 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Helpers\UserPermissionHelper;
+use App\Http\Requests\Blog\UpdateRequest;
 use App\Notifications\WAStatusNotification;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProductOrderController extends Controller
 {
-   
+
     public function index(Request $request)
     {
         $userId = getRootUser()->id;
 
-       
+
         $packagePermissions = UserPermissionHelper::packagePermission($userId);
         $packagePermissions = json_decode($packagePermissions, true);
         $search = $request->search;
-        if(!empty($packagePermissions) && in_array('Online Order', $packagePermissions)){
+        if (!empty($packagePermissions) && in_array('Online Order', $packagePermissions)) {
             $type = $request->orders_from;
-        }else{
+        } else {
 
-          $type='pos';
+            $type = 'pos';
         }
-        
+
 
         $servingMethod = $request->serving_method;
         $orderStatus = $request->order_status;
@@ -62,31 +63,32 @@ class ProductOrderController extends Controller
         }
 
         $data['orders'] = ProductOrder::query()
-        ->where('user_id', $userId)
-        ->when($search, function ($query, $search) {
-            return $query->where('order_number', 'LIKE', '%' . $search . '%');
-        })->when($type, function ($query, $type) {
-            return $query->where('type', $type);
-        })->when($servingMethod, function ($query, $servingMethod) {
-            return $query->where('serving_method', $servingMethod);
-        })->when($orderStatus, function ($query, $orderStatus) {
-            return $query->where('order_status', $orderStatus);
-        })->when($paymentStatus, function ($query, $paymentStatus) {
-            return $query->where('payment_status', $paymentStatus);
-        })->when($completed, function ($query, $completed) {
-            return $query->where('completed', $completed);
-        })->when($orderDate, function ($query, $orderDate) {
-            return $query->whereDate('created_at', Carbon::parse($orderDate));
-        })->when($deliveryDate, function ($query, $deliveryDate) {
-            return $query->where('delivery_date', $deliveryDate);
-        })
-        ->orderBy('id', 'DESC')
-        ->paginate(10);
-    //  dd($data);
+            ->where('user_id', $userId)
+            ->when($search, function ($query, $search) {
+                return $query->where('order_number', 'LIKE', '%' . $search . '%');
+            })->when($type, function ($query, $type) {
+                return $query->where('type', $type);
+            })->when($servingMethod, function ($query, $servingMethod) {
+                return $query->where('serving_method', $servingMethod);
+            })->when($orderStatus, function ($query, $orderStatus) {
+                return $query->where('order_status', $orderStatus);
+            })->when($paymentStatus, function ($query, $paymentStatus) {
+                return $query->where('payment_status', $paymentStatus);
+            })->when($completed, function ($query, $completed) {
+                return $query->where('completed', $completed);
+            })->when($orderDate, function ($query, $orderDate) {
+                return $query->whereDate('created_at', Carbon::parse($orderDate));
+            })->when($deliveryDate, function ($query, $deliveryDate) {
+                return $query->where('delivery_date', $deliveryDate);
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
+        //  dd($data);
         return view('user.product.order.index', $data);
     }
 
-    public function settings() {
+    public function settings()
+    {
         $userId = getRootUser()->id;
         $data['abex'] = BasicExtra::query()
             ->where('user_id', $userId)
@@ -94,7 +96,8 @@ class ProductOrderController extends Controller
         return view('user.product.order.settings', $data);
     }
 
-    public function resetToken(Request $request) {
+    public function resetToken(Request $request)
+    {
         $userId = getRootUser()->id;
         $bss = BasicSetting::query()
             ->where('user_id', $userId)
@@ -108,13 +111,14 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function updateSettings(Request $request) {
-      
+    public function updateSettings(Request $request)
+    {
+
         $userId = getRootUser()->id;
         $bss = BasicSetting::query()
             ->where('user_id', $userId)
             ->get();
-        if($request->has('postal_code')){
+        if ($request->has('postal_code')) {
 
             foreach ($bss as $bs) {
                 $bs->postal_code = $request->postal_code;
@@ -189,21 +193,22 @@ class ProductOrderController extends Controller
         $bex = BasicExtra::query()
             ->where('user_id', $user->id)
             ->first();
-      
-        if(!empty($packagePermissions) && in_array('Whatsapp Order & Notification', $packagePermissions)){
+
+        if (!empty($packagePermissions) && in_array('Whatsapp Order & Notification', $packagePermissions)) {
             if ($bex->twilio_sid && $bex->twilio_token && $bex->twilio_phone_number) {
 
-                if ($bex->whatsapp_order_status_notification == 1 ) {
+                if ($bex->whatsapp_order_status_notification == 1) {
                     try {
                         Config::set('services.twilio.sid', $bex->twilio_sid);
                         Config::set('services.twilio.token', $bex->twilio_token);
                         Config::set('services.twilio.whatsapp_from', $bex->twilio_phone_number);
                         // whatsapp notification
                         $po->notify(new WAStatusNotification($po));
-                    } catch (Exception $e) {}
+                    } catch (Exception $e) {
+                    }
                 }
             }
-        }    
+        }
 
         if (!is_null($po->customer_id)) {
             $mailer = new MegaMailer();
@@ -217,7 +222,7 @@ class ProductOrderController extends Controller
                 'templateType' => $templateType,
                 'type' => 'foodOrderStatus'
             ];
-        }else{
+        } else {
             $mailer = new MegaMailer();
             $data = [
                 'toMail' => $po->billing_email,
@@ -235,7 +240,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function completed(Request $request) {
+    public function completed(Request $request)
+    {
         $userId = getRootUser()->id;
         $po = ProductOrder::query()
             ->where('user_id', $userId)
@@ -246,7 +252,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function payment(Request $request) {
+    public function payment(Request $request)
+    {
         $userId = getRootUser()->id;
         $po = ProductOrder::query()
             ->where('user_id', $userId)
@@ -265,10 +272,141 @@ class ProductOrderController extends Controller
             ->with('orderItems')
             ->where('user_id', $userId)
             ->find($id);
-           
-        $this->authorize('view',$order);
+
+        $this->authorize('view', $order);
         return view('user.product.order.details', compact('order'));
     }
+
+    public function edit($id)
+    {
+        $userId = getRootUser()->id;
+        $order = ProductOrder::query()
+            ->with('orderItems')
+            ->where('user_id', $userId)
+            ->find($id);
+
+        $this->authorize('view', $order);
+        return view('user.product.order.edit', compact('order'));
+    }
+
+    public function update(Request $request)
+    {
+
+
+        // Get the authenticated user's ID
+        $userId = getRootUser()->id;
+
+        // Find the order by ID and user ID
+        $order = ProductOrder::query()
+            ->where('user_id', $userId)
+            ->find($request->order_id);
+
+        // Check if the order exists
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        // Authorize the update action
+        // $this->authorize('update', $order);
+
+        // Update the order fields with the request data
+        $order->type = $request->order_type;
+        $order->serving_method = $request->serving_method;
+        $order->postal_code = $request->postal_code;
+        $order->coupon = $request->discount;
+        $order->tax = $request->tax;
+        $order->shipping_charge = $request->shipping_charge;
+        $order->total = $request->total;
+        $order->method = $request->payment_method;
+        $order->payment_status = $request->payment_status;
+        $order->order_status = $request->order_status;
+        $order->completed = strtolower($request->complete) == 'yes' ? 'Yes' : 'No';
+        $order->delivery_date = $request->preferred_delivery_date;
+        $order->delivery_time_start = $request->preferred_delivery_time_frame_start;
+        $order->delivery_time_end = $request->preferred_delivery_time_frame_end;
+        $order->order_notes = $request->order_notes;
+        // dd($order);
+        // Save the updated order
+        $order->save();
+
+        // Redirect back with success message
+        return redirect()->route('user.product.orders.edit', $order->id)->with('success', 'Order updated successfully.');
+    }
+
+    public function updateShippingDetails(Request $request)
+    {
+
+        $userId = getRootUser()->id;
+
+        // Find the order by ID and user ID
+        $order = ProductOrder::query()
+            ->where('user_id', $userId)
+            ->find($request->order_id);
+
+        // Check if the order exists
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        // Authorize the update action
+        // $this->authorize('update', $order);
+
+        // Update the order fields with the request data
+        $order->type = $request->order_type;
+        $order->shipping_fname = $request->shipping_fname;
+        $order->shipping_email = $request->shipping_email;
+        $order->shipping_number = $request->shipping_number;
+        $order->shipping_city = $request->shipping_city;
+        $order->shipping_address = $request->shipping_address;
+        $order->shipping_country = $request->shipping_country;
+        // dd($order);
+        // Save the updated order
+        $order->save();
+
+        // Redirect back with success message
+        return redirect()->route('user.product.orders.edit', $order->id)->with('success', 'Shipping Details updated successfully.');
+    }
+
+    public function updateBillingDetails(Request $request)
+    {
+
+        $userId = getRootUser()->id;
+
+        // Find the order by ID and user ID
+        $order = ProductOrder::query()
+            ->where('user_id', $userId)
+            ->find($request->order_id);
+
+        // Check if the order exists
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        // Authorize the update action
+        // $this->authorize('update', $order);
+
+        // Update the order fields with the request data
+        $order->type = $request->order_type;
+        $order->billing_fname = $request->billing_fname;
+        $order->billing_email = $request->billing_email;
+        $order->billing_number = $request->billing_number;
+        $order->billing_city = $request->billing_city;
+        $order->billing_address = $request->billing_address;
+        $order->billing_country = $request->billing_country;
+        $order->table_number = $request->table_number;
+        $order->waiter_name = $request->waiter_name;
+        $order->pick_up_date = $request->pick_up_date;
+        $order->pick_up_time = $request->pick_up_time;
+        // dd($order);
+        // Save the updated order
+        $order->save();
+
+        // Redirect back with success message
+        return redirect()->route('user.product.orders.edit', $order->id)->with('success', 'Information updated successfully.');
+    }
+
+
+
 
     public function bulkOrderDelete(Request $request)
     {
@@ -278,8 +416,8 @@ class ProductOrderController extends Controller
             $order = ProductOrder::query()
                 ->where('user_id', $userId)
                 ->findOrFail($id);
-            Uploader::remove(Constant::WEBSITE_PRODUCT_INVOICE,$order->invoice_number);
-            Uploader::remove(Constant::WEBSITE_PRODUCT_RECEIPT,$order->receipt);
+            Uploader::remove(Constant::WEBSITE_PRODUCT_INVOICE, $order->invoice_number);
+            Uploader::remove(Constant::WEBSITE_PRODUCT_RECEIPT, $order->receipt);
             foreach ($order->orderitems as $item) {
                 $item->delete();
             }
@@ -296,7 +434,7 @@ class ProductOrderController extends Controller
         $order = ProductOrder::query()
             ->where('user_id', $userId)
             ->findOrFail($request->order_id);
-        Uploader::remove(Constant::WEBSITE_PRODUCT_INVOICE,$order->invoice_number);
+        Uploader::remove(Constant::WEBSITE_PRODUCT_INVOICE, $order->invoice_number);
         foreach ($order->orderitems as $item) {
             $item->delete();
         }
@@ -306,7 +444,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function qrPrint(Request $request) {
+    public function qrPrint(Request $request)
+    {
         $userId = getRootUser()->id;
         $bs = BasicSetting::query()->where('user_id', $userId)->first();
         $data = UserPermissionHelper::currentPackageFeatures($userId);
@@ -316,25 +455,26 @@ class ProductOrderController extends Controller
         } elseif ($order->method == 'mollie') {
             $url = route('product.mollie.apiRequest', $request->order_id);
         }
-        $directory = Constant::WEBSITE_TENANT_PRODUCT_ORDER_QR_IMAGE.'/';
+        $directory = Constant::WEBSITE_TENANT_PRODUCT_ORDER_QR_IMAGE . '/';
         $qrImage = uniqid() . '.svg';
-        if(in_array("Amazon AWS s3", $data) && !is_null($bs->aws_access_key_id) && !is_null($bs->aws_secret_access_key) && !is_null($bs->aws_default_region) && !is_null($bs->aws_bucket)){
+        if (in_array("Amazon AWS s3", $data) && !is_null($bs->aws_access_key_id) && !is_null($bs->aws_secret_access_key) && !is_null($bs->aws_default_region) && !is_null($bs->aws_bucket)) {
             $qrcode = QrCode::size(150)
-                ->color(0,0,0)
+                ->color(0, 0, 0)
                 ->format('svg')
                 ->generate($url);
             setAwsCredentials($bs->aws_access_key_id, $bs->aws_secret_access_key, $bs->aws_default_region, $bs->aws_bucket);
-            Storage::disk('s3')->put($directory.$qrImage, $qrcode);
-        }else{
+            Storage::disk('s3')->put($directory . $qrImage, $qrcode);
+        } else {
             $qrcode = QrCode::size(150)
-                ->color(0,0,0)
+                ->color(0, 0, 0)
                 ->format('svg');
             $qrcode->generate($url, $directory . $qrImage);
         }
         return !is_null($bs->aws_access_key_id) && !is_null($bs->aws_secret_access_key) && !is_null($bs->aws_default_region) && !is_null($bs->aws_bucket) && Storage::disk('s3')->exists($directory . $qrImage) ? Storage::disk('s3')->url($directory . $qrImage) : url($directory . $qrImage);
     }
 
-    public function servingMethods() {
+    public function servingMethods()
+    {
         $userId = getRootUser()->id;
         $data['servingMethods'] = ServingMethod::query()
             ->where('user_id', $userId)
@@ -348,7 +488,8 @@ class ProductOrderController extends Controller
         return view('user.product.order.serving_methods.index', $data);
     }
 
-    public function servingMethodStatus(Request $request) {
+    public function servingMethodStatus(Request $request)
+    {
         $userId = getRootUser()->id;
         $website = ServingMethod::query()->where([
             ['website_menu', 1],
@@ -380,7 +521,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function servingMethodGateways(Request $request) {
+    public function servingMethodGateways(Request $request)
+    {
         $userId = getRootUser()->id;
         $sm = ServingMethod::query()
             ->where('user_id', $userId)
@@ -392,7 +534,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function qrPayment(Request $request) {
+    public function qrPayment(Request $request)
+    {
         $userId = getRootUser()->id;
         $sm = ServingMethod::query()
             ->where('user_id', $userId)
@@ -404,7 +547,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function servingMethodUpdate(Request $request) {
+    public function servingMethodUpdate(Request $request)
+    {
         $userId = getRootUser()->id;
         $sm = ServingMethod::query()
             ->where('user_id', $userId)
@@ -417,7 +561,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function ordertime() {
+    public function ordertime()
+    {
         $userId = getRootUser()->id;
         $data['ordertimes'] = OrderTime::query()
             ->where('user_id', $userId)
@@ -425,7 +570,8 @@ class ProductOrderController extends Controller
         return view('user.product.order.order-time', $data);
     }
 
-    public function updateOrdertime(Request $request) {
+    public function updateOrdertime(Request $request)
+    {
         $userId = getRootUser()->id;
         $start = $request->start_time;
         $end = $request->end_time;
@@ -433,7 +579,7 @@ class ProductOrderController extends Controller
             ->where('user_id', $userId)
             ->get();
 
-        for ($i=0; $i < count($ots); $i++) {
+        for ($i = 0; $i < count($ots); $i++) {
             $ots[$i]->start_time = $start[$i];
             $ots[$i]->end_time = $end[$i];
             $ots[$i]->save();
@@ -443,11 +589,13 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function deliveryTime() {
+    public function deliveryTime()
+    {
         return view('user.product.order.delivery_time.index');
     }
 
-    public function timeFrames(Request $request) {
+    public function timeFrames(Request $request)
+    {
         $userId = getRootUser()->id;
 
         $data['timeframes'] = TimeFrame::query()
@@ -460,9 +608,9 @@ class ProductOrderController extends Controller
         return view('user.product.order.delivery_time.timeframes', $data);
     }
 
-    public function timeFrameStore(Request $request) 
+    public function timeFrameStore(Request $request)
     {
-     
+
         $rules = [
             'start' => 'required',
             'end' => 'required',
@@ -487,7 +635,8 @@ class ProductOrderController extends Controller
         return "success";
     }
 
-    public function timeFrameUpdate(Request $request) {
+    public function timeFrameUpdate(Request $request)
+    {
         $rules = [
             'start' => 'required',
             'end' => 'required',
@@ -524,7 +673,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function deliveryStatus(Request $request) {
+    public function deliveryStatus(Request $request)
+    {
         $userId = getRootUser()->id;
         $bes = BasicExtended::query()
             ->where('user_id', $userId)
@@ -539,7 +689,8 @@ class ProductOrderController extends Controller
         return back();
     }
 
-    public function orderclose(Request $request) {
+    public function orderclose(Request $request)
+    {
         $rules = [
             'order_close' => 'required',
         ];
@@ -614,10 +765,7 @@ class ProductOrderController extends Controller
                         ->from($fromMail)
                         ->html($msg, 'text/html');
                 });
-                
-    
             } catch (\Exception $e) {
-
             }
         } else {
             try {
@@ -642,12 +790,10 @@ class ProductOrderController extends Controller
                         ->html($msg, 'text/html');
                 });
             } catch (\Exception $e) {
-
             }
         }
 
         Session::flash('success', 'Mail sent successfully!');
         return "success";
     }
-
 }

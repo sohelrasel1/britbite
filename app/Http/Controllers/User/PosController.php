@@ -107,6 +107,41 @@ class PosController extends Controller
         return view('user.pos.index', $data);
     }
 
+
+    // public function updateOrder(Request $request, $orderId)
+    // {
+    //     // Retrieve the existing order by ID
+    //     $order = ProductOrder::find($orderId);
+    
+    //     if (!$order) {
+    //         return response()->json(['error' => 'Order not found'], 404);
+    //     }
+    
+    //     // Add the selected products to the existing order
+    //     // Implement the logic to add products to the order here
+    
+    //     // Save the updated order
+    //     $order->save();
+    
+    //     return response()->json(['success' => true, 'orderId' => $orderId]);
+    // }
+    
+    // public function itemPlaceOrder(Request $request)
+    // {
+    //     // Logic for creating a new order
+    //     $order = new ProductOrder();
+    
+    //     // Add selected products to the new order
+    //     // Implement the logic to add products to the order here
+    
+    //     // Save the new order
+    //     $order->save();
+    
+    //     return response()->json(['success' => true, 'orderId' => $order->id]);
+    // }
+    
+
+    
     public function addToCart($id)
     {
         $userId = getRootUser()->id;

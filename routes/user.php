@@ -176,6 +176,19 @@ Route::middleware(['banStaff', 'Demo'])->group(function () {
             Route::post('/product/order/payment', [ProductOrderController::class, 'payment'])->name('user.product.order.payment');
             Route::post('/product/orders/status', [ProductOrderController::class, 'status'])->name('user.product.orders.status');
             Route::get('/product/orders/details/{id}', [ProductOrderController::class, 'details'])->name('user.product.orders.details');
+
+            // ------------------------------------
+            Route::get('/product/orders/edit/{id}', [ProductOrderController::class, 'edit'])->name('user.product.orders.edit');
+            Route::post('/product/orders/update', [ProductOrderController::class, 'update'])->name('user.product.orders.update');
+            Route::post('/product/orders/update/shipping', [ProductOrderController::class, 'updateShippingDetails'])->name('user.product.orders.update.shipping.details');
+            Route::post('/product/orders/update/billing', [ProductOrderController::class, 'updateBillingDetails'])->name('user.product.orders.update.billing.details');
+
+
+            // Route::post('/pos/update-order/{orderId}', [POSController::class, 'updateOrder'])->name('pos.update.order');
+            // Route::post('/pos/place-order', [POSController::class, 'itemPlaceOrder'])->name('pos.place.order');
+
+            // ----------------------------------------
+
             Route::post('/product/order/delete', [ProductOrderController::class, 'orderDelete'])->name('user.product.order.delete');
             Route::post('/product/order/bulk-delete', [ProductOrderController::class, 'bulkOrderDelete'])->name('user.product.order.bulk.delete');
             Route::post('/product/order/qrprint', [ProductOrderController::class, 'qrPrint'])->name('user.product.order.qrprint');
@@ -488,7 +501,7 @@ Route::middleware(['banStaff', 'Demo'])->group(function () {
 
         Route::get('/menu/section', [BasicController::class, 'menusection'])->name('user.menusection.index');
         Route::post('/menu/section/{langid}/update', [BasicController::class, 'menusectionUpdate'])->name('user.menusection.update');
-        Route::post('/menu/section/remove/image', [BasicController::class,'removeImage'])->name('user.menusection.rmv.img');
+        Route::post('/menu/section/remove/image', [BasicController::class, 'removeImage'])->name('user.menusection.rmv.img');
 
 
         Route::get('/members', [MemberController::class, 'index'])->name('user.member.index');

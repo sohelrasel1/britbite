@@ -457,6 +457,9 @@ use App\Http\Helpers\Uploader;
                                                         <a class="dropdown-item"
                                                             href="{{ route('user.product.orders.details', $order->id) }}">Details</a>
 
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('user.product.orders.edit', $order->id) }}">Edit</a>
+
                                                         <a href="#" class="dropdown-item editbtn"
                                                             data-toggle="modal" data-target="#mailModal"
                                                             data-email="{{ $order->billing_email }}">Send
