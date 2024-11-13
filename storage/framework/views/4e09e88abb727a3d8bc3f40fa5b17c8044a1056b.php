@@ -257,9 +257,10 @@ use App\Http\Helpers\Uploader;
 
                                             <th scope="col">Order Number</th>
 
-                                  
+
                                             <th scope="col">Total</th>
-                                   
+                                            <th scope="col">Discount</th>
+
 
                                             <th scope="col">Serving Method</th>
                                             <th scope="col">Payment</th>
@@ -282,15 +283,23 @@ use App\Http\Helpers\Uploader;
                                             <!-- <td><?php echo e($order->order_number); ?></td> -->
                                             <td><?php echo e(substr($order->order_number, -5)); ?> - Table No : <?php echo e($order->table_number ? convertUtf8($order->table_number) : '0'); ?></td>
                                             <td>
-
                                                 <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
 
-                                                <?php echo e($order->total); ?>
+                                              
+                                                <?php
+                                                $discount = $order->total * ($order->after_discount_price) / 100;
+                                                $finalPrice = $order->total - $discount;
+                                                ?>
+                                                <?php echo e($finalPrice); ?>
 
+                                                <!-- <?php echo e($order->total); ?> - <?php echo e($order->after_discount_price ?? '0'); ?>% =  <?php echo e($finalPrice); ?> -->
                                                 <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
 
-
                                             </td>
+                                            <td>
+                                                <?php echo e($order->after_discount_price ?? '0'); ?> %
+                                            </td>
+                                           
                                             <td class="text-capitalize">
                                                 <?php if($order->serving_method == 'on_table'): ?>
                                                 On Table

@@ -423,14 +423,20 @@ use App\Http\Helpers\Uploader;
                                 value="<?php echo e(convertUtf8($order->billing_email)); ?>" placeholder="Enter Email">
                         </div>
                         <?php endif; ?>
-                        <?php if(!empty($order->billing_number)): ?>
-                        <div class="row mb-2">
+                        <!-- <?php if(!empty($order->billing_number)): ?> -->
+                        <!-- <div class="row mb-2">
                             <label for="billing_phone"><strong><?php echo e(__('Phone')); ?>:</strong></label>
                             <input type="text" class="form-control" id="billing_phone" name="billing_phone"
                                 value="<?php echo e($order->billing_country_code); ?><?php echo e($order->billing_number); ?>"
                                 placeholder="Enter Phone Number">
+                        </div> -->
+                        <div class="row mb-2">
+                            <label for="billing_phone"><strong><?php echo e(__('Note')); ?>:</strong></label>
+                            <textarea type="text" class="form-control" id="billing_phone" name="billing_phone"
+                                value="<?php echo e($order->billing_number); ?>"
+                                placeholder="Enter Notes..."><?php echo e($order->billing_number); ?></textarea>
                         </div>
-                        <?php endif; ?>
+                        <!-- <?php endif; ?> -->
                         <?php if(!empty($order->billing_city)): ?>
                         <div class="row mb-2">
                             <label for="billing_city"><strong><?php echo e(__('City')); ?>:</strong></label>
@@ -511,12 +517,13 @@ use App\Http\Helpers\Uploader;
 
 </div>
 
+ 
 <div class="col-lg-12">
     <div class="card">
         <div class="card-header d-flex justify-content-between">
             <h4 class="card-title"><?php echo e(__('Ordered Products')); ?></h4>
             <div class="">
-                <a href="<?php echo e(route('user.pos', $order->id)); ?>" type="submit" class="btn btn-success">
+                <a href="<?php echo e(route('user.pos.edit', $order->id)); ?>" type="submit" class="btn btn-success">
                     <?php echo e(__('Add Items')); ?></a>
             </div>
         </div>

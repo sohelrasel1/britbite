@@ -9,8 +9,8 @@
             <h5 class="text-center">NO CATEGORY FOUND</h5>
         </div>
     @else
-        <div class="col-lg-4 pr-3">
-            <div class="pos-categories">
+        <div class="col-lg-3 pr-3">
+            <div class="pos-categories custome_category">
                 <div class="card">
                     <div class="card-body">
                         <div class="nav flex-column nav-pills nav-secondary nav-pills-no-bd"
@@ -26,7 +26,7 @@
 
             </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-9">
             <div class="pos-items">
                 <div class="card">
                     <div class="card-body px-2 pb-1">
@@ -40,7 +40,7 @@
                                                 @php
                                                     $product = Product::query()->find($productInformation->product_id);
                                                 @endphp
-                                                <div class="col-lg-4 px-2 mb-3">
+                                                <div class="col-lg-4 custome_col_4 px-2 mb-3">
                                                     <a href="#" class="single-pos-item d-block cart-link"
                                                        data-product="{{$product}}"
                                                        data-title="{{$productInformation->title}}"
@@ -48,7 +48,7 @@
                                                         <img class="lazy"
                                                              src="{{Uploader::getImageUrl(Constant::WEBSITE_PRODUCT_FEATURED_IMAGE,$product->feature_image,$userBs)}}"
                                                              data-src="{{Uploader::getImageUrl(Constant::WEBSITE_PRODUCT_FEATURED_IMAGE,$product->feature_image,$userBs)}}"
-                                                              width="120" height="120">
+                                                              >
                                                         <h6 class="mt-2 text-center">
                                                             {{ strlen($productInformation->title) > 27 ? mb_substr($productInformation->title, 0, 27, 'UTF-8') . '...' : $productInformation->title }}
                                                         </h6>

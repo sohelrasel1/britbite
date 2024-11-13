@@ -103,43 +103,87 @@ class PosController extends Controller
             ['value', 'on_table'],
             ['user_id', $userId]
         ])->first();
-
         return view('user.pos.index', $data);
     }
+    public function posEdit($id)
+     {
+       
+        $userId = getRootUser()->id;
 
+        $data['old_cart'] = ProductOrder::query()
+        ->with('orderItems')
+        ->where('user_id', $userId)
+        ->find($id);
+        
+        // if (!$data['old_cart']) {
+        //     return redirect()->route('user.pos.edit')->withErrors('Order not found.');
+        // }
+        // dd($data['old_cart']);
 
-    // public function updateOrder(Request $request, $orderId)
-    // {
-    //     // Retrieve the existing order by ID
-    //     $order = ProductOrder::find($orderId);
-    
-    //     if (!$order) {
-    //         return response()->json(['error' => 'Order not found'], 404);
-    //     }
-    
-    //     // Add the selected products to the existing order
-    //     // Implement the logic to add products to the order here
-    
-    //     // Save the updated order
-    //     $order->save();
-    
-    //     return response()->json(['success' => true, 'orderId' => $orderId]);
-    // }
-    
-    // public function itemPlaceOrder(Request $request)
-    // {
-    //     // Logic for creating a new order
-    //     $order = new ProductOrder();
-    
-    //     // Add selected products to the new order
-    //     // Implement the logic to add products to the order here
-    
-    //     // Save the new order
-    //     $order->save();
-    
-    //     return response()->json(['success' => true, 'orderId' => $order->id]);
-    // }
-    
+        $lang = Language::query()->where([
+            ['user_id', $userId],
+            ['is_default', 1]
+        ])->first();
+
+        $data['pcats'] = $lang->pcategories()->where('status', 1)->get();
+
+        $data['smethods'] = ServingMethod::query()->where([
+            ['pos', 1],
+            ['user_id', $userId]
+        ])->get();
+        $data['pmethods'] = PosPaymentMethod::query()->where([
+            ['status', 1],
+            ['user_id', $userId]
+        ])->get();
+        $data['tables'] = Table::query()->where([
+            ['status', 1],
+            ['user_id', $userId]
+        ])->get();
+        $data['scharges'] = $lang->shipping_charges;
+
+        $data['postcodes'] = PostalCode::query()->where([
+            ['language_id', $lang->id],
+            ['user_id', $userId]
+        ])
+        ->orderBy('serial_number', 'ASC')
+        ->get();
+        $data['lang'] = $lang;
+        $data['cart'] = Session::get(getRootUser()->username.'_pos_cart');
+
+        // disabled days
+        $days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+        $disDays = [];
+        foreach ($days as $day) {
+            $count = TimeFrame::where([
+                ['day', $day],
+                ['user_id', $userId]
+            ])->count();
+            if ($count == 0) {
+                if ($day == 'sunday') {
+                    $disDays[] = 0;
+                } elseif ($day == 'monday') {
+                    $disDays[] = 1;
+                } elseif ($day == 'tuesday') {
+                    $disDays[] = 2;
+                } elseif ($day == 'wednesday') {
+                    $disDays[] = 3;
+                } elseif ($day == 'thursday') {
+                    $disDays[] = 4;
+                } elseif ($day == 'friday') {
+                    $disDays[] = 5;
+                } elseif ($day == 'saturday') {
+                    $disDays[] = 6;
+                }
+            }
+        }
+        $data['disDays'] = $disDays;
+        $data['onTable'] = ServingMethod::where([
+            ['value', 'on_table'],
+            ['user_id', $userId]
+        ])->first();
+        // dd($data);
+        return view('user.pos.edit-pos', $data);
+    }
 
     
     public function addToCart($id)
@@ -280,7 +324,9 @@ class PosController extends Controller
     }
 
     public function customerCopy() {
+        
         $data['cart'] = Session::get(getRootUser()->username.'_pos_cart');
+        // dd($data);
         return view('user.pos.partials.customer-copy', $data);
     }
 
@@ -436,6 +482,7 @@ class PosController extends Controller
         $po->serving_method = $request->serving_method;
         $po->method = $request->payment_method;
         $po->payment_status = $request->payment_status;
+        $po->after_discount_price = $request->after_discount_price;
         $po->user_id = $userId;
         $po->membership_id = $membership->id;
 
@@ -507,6 +554,243 @@ class PosController extends Controller
         $customer->phone = $request->customer_phone;
         $customer->email = $request->customer_email;
         $customer->user_id = $userId;
+        
+        // dd($customer);
+        $customer->save();
+
+        // store in `order_items`
+        $cart = Session::get(getRootUser()->username.'_pos_cart');
+
+        foreach ($cart as $cartItem) {
+
+            $addonTotal = 0.00;
+            if (!empty($cartItem["addons"])) {
+                foreach ($cartItem["addons"] as $addon) {
+                    $addonTotal += (float)$addon["price"];
+                }
+                $addonTotal = $addonTotal * (int)$cartItem["qty"];
+            }
+            $varTotal = 0.00;
+            if (!empty($cartItem["variations"])) {
+                foreach ($cartItem["variations"] as $key => $variation) {
+                    $varTotal += (float)$variation["price"];
+                }
+                $varTotal = $varTotal * (int)$cartItem["qty"];
+            }
+            $pprice = (float)$cartItem["product_price"] * (int)$cartItem["qty"];
+
+            OrderItem::insert([
+                'user_id' => $userId,
+                'product_order_id' => $orderId,
+                'product_id' => $cartItem["id"],
+                'title' => $cartItem["name"],
+                'variations' => json_encode($cartItem["variations"]),
+                'addons' => json_encode($cartItem["addons"]),
+                'variations_price' => $varTotal,
+                'addons_price' => $addonTotal,
+                'product_price' => $pprice,
+                'total' => $pprice + $varTotal + $addonTotal,
+                'qty' => $cartItem["qty"],
+                'image' => $cartItem["photo"],
+                'created_at' => Carbon::now()
+            ]);
+        }
+
+        if (!empty($be['pusher_app_id']) && !empty($be['pusher_app_key']) && !empty($be['pusher_app_secret']) && !empty($be['pusher_app_cluster']) && (is_array($packagePermissions) && in_array('Live Orders', $packagePermissions))) {
+
+            $pusherCredentials = [
+                'driver' => 'pusher',
+                'app_id' => $be['pusher_app_id'],
+                'key' => $be['pusher_app_key'],
+                'secret' => $be['pusher_app_secret'],
+                'options' => [
+                    'cluster' => $be['pusher_app_cluster'],
+                ],
+            ];
+
+            Config::set('broadcasting.connections.pusher', $pusherCredentials);
+
+            event(new OrderPlaced());
+        }
+        // clear cart
+        Session::forget(getRootUser()->username.'_pos_cart');
+        Session::forget(getRootUser()->username.'_pos_shipping_charge');
+        Session::forget(getRootUser()->username.'_pos_serving_method');
+
+        $bex = BasicExtra::query()->where('user_id', $userId)->first();
+
+        if (!empty($packagePermissions) && in_array('Whatsapp Order & Notification', $packagePermissions)) {
+
+            if ($bex->whatsapp_order_status_notification == 1) {
+
+                if (($po->serving_method == 'home_delivery' && $bex->whatsapp_home_delivery == 1)
+                    || ($po->serving_method == 'pick_up' && $bex->whatsapp_pickup == 1)
+                    || ($po->serving_method == 'on_table' && $bex->whatsapp_on_table == 1)
+                ) {
+                    try {
+                        // whatsapp notification
+                        Config::set('services.twilio.sid', $bex->twilio_sid);
+                        Config::set('services.twilio.token', $bex->twilio_token);
+                        Config::set('services.twilio.whatsapp_from', $bex->twilio_phone_number);
+                        $po->notify(new WhatsappNotification($po));
+                    } catch (\Exception $e) {
+                      
+                    }
+                }
+            }
+        }
+
+        
+        $this->mailFromOwner($po, $user);
+     
+        Session::flash('previous_serving_method', $request->serving_method);
+        Session::flash('success', 'Order placed successfully');
+        return 'success';
+    }
+
+    public function updateOrder(Request $request) 
+    {
+        // dd($request->all());
+        $userId = getRootUser()->id;
+        $count = LimitCheckerHelper::orderCount(getRootUser()->id);
+        $package = LimitCheckerHelper::currentMembershipPackage(getRootUser()->id);
+        $membership = LimitCheckerHelper::currentMembership($userId);
+
+        if (is_null($package) || $count >= $package->order_limit) {
+
+            Session::flash('warning', "we are currently unable to receive any order");
+            return 'success';
+        }
+
+        $packagePermissions = UserPermissionHelper::packagePermission($userId);
+        $packagePermissions = json_decode($packagePermissions, true);
+
+        $currentLang = Language::query()->where([
+            ['user_id', $userId],
+            ['is_default', 1]
+        ])->first();
+
+        $be = BasicExtended::query()
+            ->where('user_id', $userId)
+            ->where('language_id', $currentLang->id)
+            ->first();
+
+        $user = User::where('id',$userId)->first();
+
+      
+
+        if (empty(Session::get(getRootUser()->username.'_pos_cart'))) {
+
+            Session::flash('warning', 'No item added to cart!');
+            return 'success';
+        }
+
+        if ($request->has('delivery_time') && $request->filled('delivery_time')) {
+            $tf = TimeFrame::query()
+                ->where('user_id', $userId)
+                ->find((int)$request->delivery_time);
+            // if maximum orders limit is not unlimited
+            if (!empty($tf) && $tf->max_orders != 0) {
+                $orderCount = ProductOrder::query()
+                    ->where('order_status', '<>', 'cancelled')
+                    ->where('delivery_time_start', $tf->start)
+                    ->where('delivery_time_end', $tf->end)
+                    ->where('user_id', $userId)
+                    ->count();
+                if ($orderCount >= $tf->max_orders) {
+                    
+                    Session::flash('warning', 'Number of orders in this time frame has reached to its limit!');
+                    return 'success';
+                }
+            }
+        }
+       
+        $bs = BasicSetting::query()
+            ->where('user_id', $userId)
+            ->first();
+        // store in `product_orders`
+        $po =ProductOrder::find($request->product_order_id);
+        $po->order_number = $request->product_order_number;
+        $po->billing_fname = $request->customer_name;
+        $po->billing_number = $request->customer_phone;
+        $po->billing_email = $request->customer_email;
+        $po->serving_method = $request->serving_method;
+        $po->method = $request->payment_method;
+        $po->payment_status = $request->payment_status;
+        $po->after_discount_price = $request->after_discount_price;
+        $po->user_id = $userId;
+        $po->membership_id = $membership->id;
+
+        if ($request->serving_method == 'on_table') {
+            $po->token_no = $bs->token_no + 1;
+            $bs->token_no = $po->token_no;
+            $bs->save();
+            session()->put('pos_token_no', $po->token_no);
+            $po->table_number = $request->table_no;
+        } elseif ($request->serving_method == 'pick_up') {
+            $po->pick_up_date = $request->pick_up_date;
+            $po->pick_up_time = $request->pick_up_time;
+        } elseif ($request->serving_method == 'home_delivery') {
+            $po->delivery_date = $request->delivery_date;
+            if ($be->delivery_date_time_status == 1) {
+                if ($request->has('delivery_time') && $request->filled('delivery_time')) {
+                    $po->delivery_time_start = $tf->start;
+                    $po->delivery_time_end = $tf->end;
+                }
+            }
+
+            if ($bs->postal_code == 0 || (is_array($packagePermissions) && !in_array('Postal Code Based Delivery Charge', $packagePermissions))) {
+                if ($request->has('shipping_charge')) {
+                    $shipping = ShippingCharge::query()
+                        ->where('user_id', $userId)
+                        ->findOrFail($request->shipping_charge);
+                    $po->shipping_method = $shipping->title;
+                    $po->shipping_charge = posShipping() + $request->old_shipping;
+                }
+            } else {
+                $postalCode = PostalCode::query()
+                    ->where('user_id', $userId)
+                    ->findOrFail($request->postal_code);
+                $po->shipping_charge = posShipping() + $request->old_shipping;
+
+                $title = '';
+                if (!empty($postalCode->title)) {
+                    $title = $postalCode->title . ' - ';
+                }
+                $po->postal_code = $title . $postalCode->postcode;
+                $po->postal_code_status = 1;
+            }
+        }
+
+        $po->currency_code = $be->base_currency_text;
+        $po->currency_code_position = $be->base_currency_text_position;
+        $po->currency_symbol = $be->base_currency_symbol;
+        $po->currency_symbol_position = $be->base_currency_symbol_position;
+        $po->tax = posTax() + $request->old_tax;
+        $po->total = posCartSubTotal() + posTax() + posShipping() + $request->old_total + $request->old_shipping + $request->old_tax;
+        $po->type = 'pos';
+
+        $po->update();
+        $orderId = $po->id;
+
+        // store in `customers`
+        $customer = Customer::query()
+            ->where([
+            ['phone', $request->customer_phone],
+            ['user_id', $userId]
+        ]);
+
+        if ($customer->count() == 0) {
+            $customer = new Customer;
+        } else {
+            $customer = $customer->first();
+        }
+        $customer->name = $request->customer_name;
+        $customer->phone = $request->customer_phone;
+        $customer->email = $request->customer_email;
+        $customer->user_id = $userId;
+        
+        // dd($customer);
         $customer->save();
 
         // store in `order_items`

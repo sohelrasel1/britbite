@@ -138,7 +138,7 @@
                         <div class="description">
                             <h4>Description</h4>
                         </div>
-                        <div class="amount info ">
+                        <div class="amount info">
                             <h4>Amount</h4>
                         </div>
                     </div>
@@ -237,6 +237,18 @@
                     <?php echo e($userBe->base_currency_text_position == 'left' ? $userBe->base_currency_text : ''); ?>
 
                     <?php echo e(posShipping()); ?>
+
+                    <?php echo e($userBe->base_currency_text_position == 'right' ? $userBe->base_currency_text : ''); ?>
+
+                </div>
+            </div>
+            <div class="info">
+                <div>Discount:</div>
+                <div>
+                    -
+                    <?php echo e($userBe->base_currency_text_position == 'left' ? $userBe->base_currency_text : ''); ?>
+
+                    <?php echo e(posCartDiscount()); ?>
 
                     <?php echo e($userBe->base_currency_text_position == 'right' ? $userBe->base_currency_text : ''); ?>
 

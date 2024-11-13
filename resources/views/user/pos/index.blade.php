@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Auth;
     <div class="col-md-12">
 
         <div class="row">
-            <div class="col-lg-5">
+            <div class="col-lg-7">
                 <div class="row">
-                    <div class="col-12 px-0">
+                    <div class="col-12 custome_col_12 px-0">
                         <form>
                             <div class="form-group pt-0">
                                 <input name="search" type="text" class="form-control"
@@ -36,10 +36,10 @@ use Illuminate\Support\Facades\Auth;
             </div>
             <div class="col-lg-2">
                 <div class="card">
-                    <div class="card-body px-2">
+                    <div class="card-body px-3">
                         <form id="ajaxForm" action="{{ route('user.pos.placeOrder') }}" method="POST">
                             @csrf
-                            <div class="form-group p-0 pb-2">
+                            <!-- <div class="form-group p-0 pb-2">
                                 <div class="ui-widget">
                                     <label for="">Customer Phone</label>
                                     <input class="form-control" type="text" name="customer_phone"
@@ -48,23 +48,23 @@ use Illuminate\Support\Facades\Auth;
                                     <p class="text-warning mb-0">Use <strong>Country Code</strong> in phone number
                                     </p>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="form-group p-0 pb-2">
                                 <div class="ui-widget">
                                     <label for="">Customer Name</label>
                                     <input class="form-control" name="customer_name" type="text"
-                                        placeholder="Customer Name" value="{{ old('customer_name') }}" disabled>
-                                    <small class="text-warning">Enter customer phone first.</small>
+                                        placeholder="Customer Name" value="{{ old('customer_name') }}">
+                                    <!-- <small class="text-warning">Enter customer phone first.</small> -->
                                 </div>
                             </div>
-                            <div class="form-group p-0 pb-2">
+                            <!-- <div class="form-group p-0 pb-2">
                                 <div class="ui-widget">
                                     <label for="">Customer Email</label>
                                     <input class="form-control" name="customer_email" type="email"
                                         placeholder="Customer Email" value="{{ old('customer_email') }}" disabled>
                                     <small class="text-warning">Enter customer email first.</small>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="form-group p-0 pb-2">
                                 <label for="">Serving Method **</label>
                                 <select class="form-control" name="serving_method" required>
@@ -115,12 +115,31 @@ use Illuminate\Support\Facades\Auth;
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group p-0 pb-2">
+                            <!-- <div class="form-group p-0 pb-2">
                                 <div class="ui-widget">
                                     <label for="">After Discount</label>
                                     <input class="form-control" name="after_discount_price" type="text"
                                         placeholder="After discount price " value="{{ old('after_discount_price') }}">
                                     <small class="text-warning">If there is a discount </small>
+                                </div>
+                            </div> -->
+
+                            <div class="form-group p-0 pb-2">
+                                <div class="ui-widget">
+                                    <label for="">After Discount(%)</label>
+                                    <input class="form-control" id="afterDiscountInput" name="after_discount_price" type="number"
+                                        placeholder="After discount price" value="{{ old('after_discount_price') }}"
+                                        oninput="updateDiscountAndTotal()">
+                                    <small class="text-warning">If there is a discount</small>
+                                </div>
+                            </div>
+
+                             <div class="form-group p-0 pb-2">
+                                <div class="ui-widget">
+                                    <label for="">Note</label>
+                                    <textarea class="form-control" type="text" name="customer_phone"
+                                        placeholder="Enter any note..." value="{{ old('customer_phone') }}"></textarea>
+                                    </p>
                                 </div>
                             </div>
 
@@ -226,70 +245,17 @@ use Illuminate\Support\Facades\Auth;
                         </form>
                     </div>
 
-                    <!-- <div class="card-footer text-center">
+                    <div class="card-footer text-center">
                             <button id="submitBtn" class="btn btn-success" type="button">Place Order</button>
                             @if (!empty($onTable) && $onTable->pos == 1)
                                 <p class="mb-0 text-warning">Token No. print option (for '{{ $onTable->name }}' orders)
                                     will be shown after placing order.</p>
                             @endif
-                        </div> -->
-
-                    <div class="card-footer text-center">
-                        <button id="submitBtn" class="btn btn-success" type="button" onclick="placeOrder( $orderId ?? 'null' )">
-                            Place Order
-                        </button>
-                        @if (!empty($onTable) && $onTable->pos == 1)
-                        <p class="mb-0 text-warning">Token No. print option (for '{{ $onTable->name }}' orders)
-                            will be shown after placing order.</p>
-                        @endif
-                    </div>
-
+                        </div>
                 </div>
             </div>
 
-
-<!-- 
-            <script>
-                function itemPlaceOrder(orderId) {
-                    let url;
-                    if (orderId) {
-                        // If orderId is present, update the existing order
-                        url = `/pos/update-order/${orderId}`;
-                    } else {
-                        // If no orderId, create a new order
-                        url = `/pos/place-order`;
-                    }
-
-                    // Prepare data (add your logic here to gather the necessary product data)
-                    let data = {
-                        // product data, quantities, etc.
-                    };
-
-                    // Send AJAX request to place/update the order
-                    axios.post(url, data)
-                        .then(response => {
-                            // Redirect back to the product list with the order ID
-                            if (orderId) {
-                                window.location.href = `/user/product/orders/${orderId}/edit`;
-                            } else {
-                                // Handle redirection after creating a new order
-                                window.location.href = `/user/product/orders/${response.data.orderId}/edit`;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error placing the order:', error);
-                            // Handle the error accordingly
-                        });
-                }
-            </script> -->
-
-
-
-
-
-
-
-            <div class="col-lg-5">
+            <div class="col-lg-3">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -422,16 +388,24 @@ use Illuminate\Support\Facades\Auth;
                                         {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
                                     </span>
                                 </li>
-                                <li
-                                    class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white">
-                                    <strong>Total</strong>
-                                    <span>
-                                        {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
-                                        <span
-                                            class="grandTotal">{{ posCartSubTotal() + posTax() + posShipping() }}</span>
-                                        {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
-                                    </span>
-                                </li>
+                            
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Discount
+                                        <span>
+                                             {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
+                                            <span id="discount">{{ posCartDiscount() }}</span>
+                                            {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white">
+                                        <strong>Total</strong>
+                                        <span>
+                                            {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
+                                            <span id="grandTotal">{{ posCartSubTotal() + posTax() + posShipping() }}</span>
+                                            {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
+                                        </span>
+                                    </li>
+                          
                             </ul>
                             @endif
                         </div>
@@ -460,6 +434,23 @@ use Illuminate\Support\Facades\Auth;
 
     </div>
 </div>
+
+
+<script>
+    function updateDiscountAndTotal() {
+        const discountPercentage = parseFloat(document.getElementById('afterDiscountInput').value) || 0;
+
+        const originalTotal = {{ posCartSubTotal() + posTax() + posShipping() }};
+
+        const discountAmount = (originalTotal * discountPercentage) / 100;
+
+        document.getElementById('discount').textContent = discountAmount.toFixed(2);
+
+        const updatedTotal = originalTotal - discountAmount;
+
+        document.getElementById('grandTotal').textContent = updatedTotal.toFixed(2);
+    }
+</script>
 
 
 <div class="modal fade" id="calcModal" tabindex="-1" role="dialog" aria-labelledby="calcModalTitle"

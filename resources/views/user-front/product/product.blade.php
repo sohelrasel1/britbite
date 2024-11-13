@@ -20,6 +20,12 @@
     <section class="food-menu-area food-menu-2-area food-menu-3-area pt-90">
         <div class="container">
 
+        <!-- <style>
+            .food-menu-items{
+                height: 335px !important;
+            }
+        </style> -->
+
             <div class="row">
                 <div class="col-lg-12">
                     @if ($categories->count() > 0)

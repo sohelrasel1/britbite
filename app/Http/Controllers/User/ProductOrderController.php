@@ -286,6 +286,7 @@ class ProductOrderController extends Controller
             ->find($id);
 
         $this->authorize('view', $order);
+        // dd($order);
         return view('user.product.order.edit', compact('order'));
     }
 

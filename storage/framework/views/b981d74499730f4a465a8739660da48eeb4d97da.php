@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
         <div class="row">
             <div class="col-lg-7">
                 <div class="row">
-                    <div class="col-12 custome_col_12 px-0">
+                    <div class="col-12 px-0">
                         <form>
                             <div class="form-group pt-0">
                                 <input name="search" type="text" class="form-control"
@@ -37,8 +37,13 @@ use Illuminate\Support\Facades\Auth;
             <div class="col-lg-2">
                 <div class="card">
                     <div class="card-body px-3">
-                        <form id="ajaxForm" action="<?php echo e(route('user.pos.placeOrder')); ?>" method="POST">
+                        <form id="ajaxForm" action="<?php echo e(route('user.pos.updateOrder')); ?>" method="POST">
                             <?php echo csrf_field(); ?>
+                              <input class="form-control" type="hidden" value="<?php echo e($old_cart->id); ?>" name="product_order_id">
+                              <input class="form-control" type="hidden" value="<?php echo e($old_cart->order_number); ?>" name="product_order_number">
+                              <input class="form-control" type="hidden" value="<?php echo e($old_cart->total); ?>" name="old_total">
+                              <input class="form-control" type="hidden" value="<?php echo e($old_cart->shipping_charge); ?>" name="old_shipping">
+                              <input class="form-control" type="hidden" value="<?php echo e($old_cart->tax); ?>" name="old_tax">
                             <!-- <div class="form-group p-0 pb-2">
                                 <div class="ui-widget">
                                     <label for="">Customer Phone</label>
@@ -53,8 +58,7 @@ use Illuminate\Support\Facades\Auth;
                                 <div class="ui-widget">
                                     <label for="">Customer Name</label>
                                     <input class="form-control" name="customer_name" type="text"
-                                        placeholder="Customer Name" value="<?php echo e(old('customer_name')); ?>">
-                                    <!-- <small class="text-warning">Enter customer phone first.</small> -->
+                                        placeholder="Customer Name" value="<?php echo e($old_cart->billing_fname); ?>" >
                                 </div>
                             </div>
                             <!-- <div class="form-group p-0 pb-2">
@@ -65,7 +69,7 @@ use Illuminate\Support\Facades\Auth;
                                     <small class="text-warning">Enter customer email first.</small>
                                 </div>
                             </div> -->
-                            <div class="form-group p-0 pb-2">
+                            <!-- <div class="form-group p-0 pb-2">
                                 <label for="">Serving Method **</label>
                                 <select class="form-control" name="serving_method" required>
                                     <?php $__currentLoopData = $smethods; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $smethod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -78,6 +82,21 @@ use Illuminate\Support\Facades\Auth;
                                     <?php endif; ?>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
+                            </div> -->
+
+                            <div class="form-group p-0 pb-2">
+                                <label for="">Serving Method **</label>
+                                <select class="form-control" name="serving_method" required>
+                                    <?php $__currentLoopData = $smethods; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $smethod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php if(!empty($packagePermissions) && in_array($smethod->name, $packagePermissions)): ?>
+                                            <option value="<?php echo e($smethod->value); ?>"
+                                                <?php echo e($smethod->value == (old('serving_method') ?? $old_cart->serving_method) ? 'selected' : ''); ?>>
+                                                <?php echo e($smethod->name); ?>
+
+                                            </option>
+                                        <?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
                             </div>
                             <div class="form-group p-0 pb-2">
                                 <label for="">Payment Method </label>
@@ -85,7 +104,7 @@ use Illuminate\Support\Facades\Auth;
                                     <option value="" selected disabled>Select Payment Method</option>
                                     <?php $__currentLoopData = $pmethods; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pmethod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <option value="<?php echo e($pmethod->name); ?>"
-                                        <?php echo e($pmethod->name == old('payment_method') ? 'selected' : ''); ?>>
+                                        <?php echo e($pmethod->name == (old('payment_method') ?? $old_cart->method) ? 'selected' : ''); ?>>
                                         <?php echo e($pmethod->name); ?>
 
                                     </option>
@@ -99,7 +118,7 @@ use Illuminate\Support\Facades\Auth;
                                         Pending
                                     </option>
                                     <option value="Completed"
-                                        <?php echo e('Completed' == old('payment_status') ? 'selected' : ''); ?>>
+                                        <?php echo e('Completed' == (old('payment_status') ?? $old_cart->payment_status)  ? 'selected' : ''); ?>>
                                         Completed
                                     </option>
                                 </select>
@@ -111,12 +130,13 @@ use Illuminate\Support\Facades\Auth;
                                         <option value="" selected disabled>Select Table No</option>
                                         <?php $__currentLoopData = $tables; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $table): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <option value="<?php echo e($table->table_no); ?>"
-                                            <?php echo e($table->table_no == old('table_no') ? 'selected' : ''); ?>>
+                                            <?php echo e($table->table_no == (old('table_no') ?? $old_cart->table_number) ? 'selected' : ''); ?>>
                                             Table - <?php echo e($table->table_no); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                             </div>
+
                             <!-- <div class="form-group p-0 pb-2">
                                 <div class="ui-widget">
                                     <label for="">After Discount</label>
@@ -130,17 +150,17 @@ use Illuminate\Support\Facades\Auth;
                                 <div class="ui-widget">
                                     <label for="">After Discount(%)</label>
                                     <input class="form-control" id="afterDiscountInput" name="after_discount_price" type="number"
-                                        placeholder="After discount price" value="<?php echo e(old('after_discount_price')); ?>"
+                                        placeholder="After discount price" value="<?php echo e($old_cart->after_discount_price); ?>"
                                         oninput="updateDiscountAndTotal()">
                                     <small class="text-warning">If there is a discount</small>
                                 </div>
                             </div>
 
-                             <div class="form-group p-0 pb-2">
+                            <div class="form-group p-0 pb-2">
                                 <div class="ui-widget">
                                     <label for="">Note</label>
                                     <textarea class="form-control" type="text" name="customer_phone"
-                                        placeholder="Enter any note..." value="<?php echo e(old('customer_phone')); ?>"></textarea>
+                                        placeholder="Enter any note..." value="<?php echo e($old_cart->billing_number); ?>"><?php echo e($old_cart->billing_number); ?></textarea>
                                     </p>
                                 </div>
                             </div>
@@ -255,13 +275,14 @@ use Illuminate\Support\Facades\Auth;
                         </form>
                     </div>
 
+
                     <div class="card-footer text-center">
-                            <button id="submitBtn" class="btn btn-success" type="button">Place Order</button>
-                            <?php if(!empty($onTable) && $onTable->pos == 1): ?>
-                                <p class="mb-0 text-warning">Token No. print option (for '<?php echo e($onTable->name); ?>' orders)
-                                    will be shown after placing order.</p>
-                            <?php endif; ?>
-                        </div>
+                        <button id="submitBtn" class="btn btn-success" type="button">Update Order</button>
+                        <?php if(!empty($onTable) && $onTable->pos == 1): ?>
+                        <p class="mb-0 text-warning">Token No. print option (for '<?php echo e($onTable->name); ?>' orders)
+                            will be shown after placing order.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 
@@ -276,7 +297,7 @@ use Illuminate\Support\Facades\Auth;
 
 
                         <div id="divRefresh">
-                            <?php if(empty($cart)): ?>
+                            <?php if(empty($cart) && empty($old_cart)): ?>
                             <div class="text-center py-5 mt-4">
                                 <h4>NO ITEMS ADDED</h4>
                             </div>
@@ -293,6 +314,48 @@ use Illuminate\Support\Facades\Auth;
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    <?php $__currentLoopData = $old_cart->orderItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr class="cart-item">
+                                            <td width="55%" class="item">
+                                                <h5>
+                                                    <?php echo e(strlen($item['title']) > 27 ? mb_substr($item['title'], 0, 27, 'UTF-8') . '...' : $item['title']); ?>
+
+                                                </h5>
+                                                <i class="fas fa-times text-danger item-remove"
+                                                    data-href="<?php echo e(route('user.cart.item.remove', $key)); ?>"></i>
+                                            </td>
+                                            <td width="25%"
+                                                style="padding-left: 0 !important;padding-right: 0 !important;">
+                                                <div class="input-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text sub decreaseQty"
+                                                            data-key="<?php echo e($key); ?>">
+                                                            <i class="fas fa-minus"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input name="quantity" type="number"
+                                                        class="form-control" value="<?php echo e($item['qty']); ?>"
+                                                        data-key="<?php echo e($key); ?>">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text add increaseQty"
+                                                            data-key="<?php echo e($key); ?>">
+                                                            <i class="fas fa-plus"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td width="20%">
+                                                <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
+
+                                                <?php echo e($item['total']); ?>
+
+                                                <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+
                                         <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <?php
                                         $id = $item['id'];
@@ -377,24 +440,28 @@ use Illuminate\Support\Facades\Auth;
                                     </tbody>
                                 </table>
                             </div>
+                            <?php 
+                          
+                            ?>
                             <ul class="list-group">
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Subtotal
                                     <span>
                                         <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
 
-                                        <span id="subtotal"><?php echo e(posCartSubTotal()); ?></span>
+                                        <span id="subtotal"><?php echo e(posCartSubTotal() + $old_cart->total); ?></span>
                                         <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
 
                                     </span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Tax
+
                                     <span>
                                         +
                                         <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
 
-                                        <span id="tax"><?php echo e(posTax()); ?></span>
+                                        <span id="tax"><?php echo e(posTax() + $old_cart->tax); ?></span>
                                         <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
 
                                     </span>
@@ -405,33 +472,33 @@ use Illuminate\Support\Facades\Auth;
                                         +
                                         <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
 
-                                        <span id="shipping"><?php echo e(posShipping()); ?></span>
+                                        <span id="shipping"><?php echo e(posShipping() + $old_cart->shipping_charge); ?></span>
                                         <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
 
                                     </span>
                                 </li>
-                            
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Discount
-                                        <span>
-                                             <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
 
-                                            <span id="discount"><?php echo e(posCartDiscount()); ?></span>
-                                            <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Discount
+                                    <span>
+                                        <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
 
-                                        </span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white">
-                                        <strong>Total</strong>
-                                        <span>
-                                            <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
+                                        <span id="discount"><?php echo e(posCartDiscount() + $old_cart->discount); ?></span>
+                                        <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
 
-                                            <span id="grandTotal"><?php echo e(posCartSubTotal() + posTax() + posShipping()); ?></span>
-                                            <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+                                    </span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white">
+                                    <strong>Total</strong>
+                                    <span>
+                                        <?php echo e($userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : ''); ?>
 
-                                        </span>
-                                    </li>
-                          
+                                        <span id="grandTotal"><?php echo e(posCartSubTotal() + posTax() + $old_cart->total + posShipping() + $old_cart->tax + $old_cart->shipping_charge); ?></span>
+                                        <?php echo e($userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : ''); ?>
+
+                                    </span>
+                                </li>
+
                             </ul>
                             <?php endif; ?>
                         </div>
@@ -466,7 +533,7 @@ use Illuminate\Support\Facades\Auth;
     function updateDiscountAndTotal() {
         const discountPercentage = parseFloat(document.getElementById('afterDiscountInput').value) || 0;
 
-        const originalTotal = <?php echo e(posCartSubTotal() + posTax() + posShipping()); ?>;
+        const originalTotal = <?php echo e(posCartSubTotal() + posTax() + posShipping() + $old_cart->tax + $old_cart->shipping_charge + $old_cart->total); ?>;
 
         const discountAmount = (originalTotal * discountPercentage) / 100;
 
@@ -612,4 +679,4 @@ Session::get('previous_serving_method') == 'on_table'): ?>
 
 <script src="<?php echo e(asset('assets/admin/js/cart.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('user.layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH G:\BritBite-Company-England\britbite-git\britbite\resources\views/user/pos/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('user.layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH G:\BritBite-Company-England\britbite-git\britbite\resources\views/user/pos/edit-pos.blade.php ENDPATH**/ ?>

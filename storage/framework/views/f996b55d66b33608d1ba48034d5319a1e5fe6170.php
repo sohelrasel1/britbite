@@ -40,6 +40,9 @@
     <link rel="stylesheet" href="<?php echo e(asset('assets/front/css/whatsapp.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/restaurant/css/responsive.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/front/css/cookie-alert.css')); ?>">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
     <?php if($rtl == 1): ?>
         <link rel="stylesheet" href="<?php echo e(asset('assets/restaurant/css/rtl.css')); ?>">
     <?php endif; ?>

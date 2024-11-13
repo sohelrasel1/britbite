@@ -480,6 +480,9 @@ td.item h5 {
 
 a.single-pos-item {
     text-decoration: none;
+    text-align: center;
+    border: 1px solid rgb(238, 237, 237);
+    box-shadow: 0px 0px 3px 0px #d5d1d1;
 }
 
 #cartTable tr.cart-item td {
@@ -729,4 +732,50 @@ html body[data-background-color=dark] .ui-button.ui-state-disabled:active {
     background: transparent !important;
     border-color: rgba(181, 181, 181, .1) !important;
     color: #eee;
+}
+.custome_col_4 .single-pos-item img{
+    width: 120px;
+    height: 120px;
+}
+@media (min-width: 480px)and (max-width:768px) {
+    .custome_col_4{
+        width: 33.33% !important;
+    }
+    .custome_col_4 .single-pos-item img{
+        width: 80px;
+        height: 80px;
+    }
+    .custome_col_4 .single-pos-item p{
+      margin-bottom: 5px;
+    }
+}
+
+@media (min-width: 320px)and (max-width:480px) {
+    .custome_col_4{
+        width: 50% !important;
+    }
+    .custome_col_4 .single-pos-item img{
+        width: 80px;
+        height: 80px;
+    }
+    .custome_col_4 .single-pos-item p{
+        margin-bottom: 5px;
+      }
+    .custome_category .card{
+        height: 180px;
+        overflow: scroll;
+        /* position: fixed;
+        z-index: 1000;
+        right: 3% !important;
+        top: 12%; */
+    }
+    /* .custome_col_12{
+        width: 75% !important;
+    }
+    .custome_category .nav-pills.flex-column.nav-pills-no-bd .nav-link {
+        padding: 10px;
+    }
+    .custome_col_12 .form-control {
+        width: 60%;
+    } */
 }

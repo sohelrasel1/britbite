@@ -437,7 +437,7 @@
                         @if (!empty($order->billing_number))
                             <div class="row mb-2">
                                 <div class="col-lg-6">
-                                    <strong>{{__('Phone')}} :</strong>
+                                    <strong>{{__('Note')}} :</strong>
                                 </div>
                                 <div class="col-lg-6">
                                     {{$order->billing_country_code}}{{$order->billing_number}}

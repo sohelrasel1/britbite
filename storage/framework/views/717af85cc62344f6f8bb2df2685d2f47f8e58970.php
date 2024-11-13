@@ -462,7 +462,7 @@
                         <?php if(!empty($order->billing_number)): ?>
                             <div class="row mb-2">
                                 <div class="col-lg-6">
-                                    <strong><?php echo e(__('Phone')); ?> :</strong>
+                                    <strong><?php echo e(__('Note')); ?> :</strong>
                                 </div>
                                 <div class="col-lg-6">
                                     <?php echo e($order->billing_country_code); ?><?php echo e($order->billing_number); ?>

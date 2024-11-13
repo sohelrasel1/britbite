@@ -298,20 +298,20 @@ if (!function_exists('posCartDiscount')) {
     function posCartDiscount(): float
     {
         $tax = 0;
-        $posCartDiscount = session()->get('posCartDiscount');
         if (session()->has(getRootUser()->username . '_pos_cart') && !empty(session()->get(getRootUser()->username . '_pos_cart'))) {
             $cart = session()->get(getRootUser()->username . '_pos_cart');
             foreach ($cart as $cartItem) {
                 $product = ProductInformation::query()->where('product_id', $cartItem['id'])->first();
                 $category = $product->category;
                 $cTax = $category->tax;
-                $tax += ($cTax * $cartItem['total']- $posCartDiscount) / 100;
+                $tax += ($cTax * $cartItem['total']) / 100;
             }
         }
 
         return round($tax, 2);
     }
 }
+
 
 if (!function_exists('tax')) {
     function tax()

@@ -92,6 +92,13 @@ Route::middleware(['banStaff', 'Demo'])->group(function () {
     Route::group(['middleware' => ['checkUserPermission:POS', 'checkAdminHasPermission:POS']], function () {
 
         Route::get('/pos', [PosController::class, 'index'])->name('user.pos');
+
+
+
+        Route::get('/pos/edit/{id}', [PosController::class, 'posEdit'])->name('user.pos.edit');
+
+
+
         Route::get('/cart/add-to-cart/{id}', [PosController::class, 'addToCart'])->name('user.add.cart');
         Route::get('/cart/updateQty/{key}/{qty}', [PosController::class, 'updateQty'])->name('user.cart.quantity');
         Route::get('/cart/items/remove/{id}', [PosController::class, 'cartItemRemove'])->name('user.cart.item.remove');
@@ -101,6 +108,7 @@ Route::middleware(['banStaff', 'Demo'])->group(function () {
         Route::get('/print/token-no', [PosController::class, 'tokenNo'])->name('user.token.no');
         Route::get('/load/{phone}/customer-name', [PosController::class, 'customerName'])->name('user.customer.name');
         Route::post('/pos/placeorder', [PosController::class, 'placeOrder'])->name('user.pos.placeOrder');
+        Route::post('/pos/updateorder', [PosController::class, 'updateOrder'])->name('user.pos.updateOrder');
         Route::get('/pos/shipping-charge', [PosController::class, 'shippingCharge'])->name('user.pos.shippingCharge');
 
 

@@ -257,9 +257,10 @@ use App\Http\Helpers\Uploader;
 
                                             <th scope="col">Order Number</th>
 
-                                  
+
                                             <th scope="col">Total</th>
-                                   
+                                            <th scope="col">Discount</th>
+
 
                                             <th scope="col">Serving Method</th>
                                             <th scope="col">Payment</th>
@@ -282,12 +283,20 @@ use App\Http\Helpers\Uploader;
                                             <!-- <td>{{ $order->order_number }}</td> -->
                                             <td>{{substr($order->order_number, -5) }} - Table No : {{$order->table_number ? convertUtf8($order->table_number) : '0' }}</td>
                                             <td>
-
                                                 {{ $userBe->base_currency_symbol_position == 'left' ? $userBe->base_currency_symbol : '' }}
-                                                {{ $order->total }}
+                                              
+                                                @php
+                                                $discount = $order->total * ($order->after_discount_price) / 100;
+                                                $finalPrice = $order->total - $discount;
+                                                @endphp
+                                                {{ $finalPrice }}
+                                                <!-- {{ $order->total }} - {{ $order->after_discount_price ?? '0'}}% =  {{ $finalPrice }} -->
                                                 {{ $userBe->base_currency_symbol_position == 'right' ? $userBe->base_currency_symbol : '' }}
-
                                             </td>
+                                            <td>
+                                                {{ $order->after_discount_price ?? '0'}} %
+                                            </td>
+                                           
                                             <td class="text-capitalize">
                                                 @if ($order->serving_method == 'on_table')
                                                 On Table
